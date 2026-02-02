@@ -456,7 +456,7 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
                             <h3 class="font-bold text-sm text-gray-700">Data Masuk</h3>
-                            <button onclick="app.fetchK3Data()" class="text-blue-600 text-xs font-bold"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                            <button onclick="app.fetchK3Data(true)" class="text-blue-600 text-xs font-bold"><i class="fa-solid fa-rotate"></i> Refresh</button>
                         </div>
                         <div id="k3ListContainer" class="divide-y divide-gray-100 max-h-[500px] overflow-y-auto p-4 space-y-4"></div>
                     </div>
@@ -722,7 +722,7 @@
                 // === NAVIGASI K3 ===
                 if(id.startsWith('k3')) {
                     document.getElementById('pageTitle').innerText = "SAFETY K3";
-                    if(id === 'k3-admin') this.fetchK3Data();
+                    if(id === 'k3-admin') this.fetchK3Data(false); // Silent Load
                 }
                 // ===================
 
@@ -962,15 +962,15 @@
                 }
             },
 
-            fetchK3Data: async function() {
-                this.toggleLoading(true, "Memuat Data K3...");
+            fetchK3Data: async function(showLoading = true) {
+                if(showLoading) this.toggleLoading(true, "Memuat Data K3...");
                 try {
                     const r = await fetch(API_K3 + "?action=read&t=" + Date.now());
                     const d = await r.json();
                     this.data.k3Data = d;
                     this.renderK3Admin();
                 } catch(e) { console.error(e); } 
-                finally { this.toggleLoading(false); }
+                finally { if(showLoading) this.toggleLoading(false); }
             },
 
             renderK3Admin: function() {
@@ -1007,7 +1007,6 @@
             },
 
             printK3QR: function() {
-                // Menghasilkan QR Code yang berisi URL saat ini + ?k3=lapor
                 const url = window.location.href.split('?')[0] + "?k3=lapor";
                 document.getElementById('k3QrCodeTarget').innerHTML = '';
                 new QRCode(document.getElementById('k3QrCodeTarget'), {
@@ -1016,7 +1015,6 @@
                     height: 250
                 });
                 
-                // Print
                 document.body.classList.add('printing-k3');
                 setTimeout(() => {
                     window.print();
