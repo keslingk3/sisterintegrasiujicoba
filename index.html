@@ -14,13 +14,6 @@
         body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .floating-icon { position: absolute; opacity: 0.15; color: white; animation: float 6s ease-in-out infinite; z-index: 0; }
-        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } }
-        .delay-1 { animation-delay: 0s; top: 10%; left: 10%; font-size: 4rem; }
-        .delay-2 { animation-delay: 2s; top: 20%; right: 15%; font-size: 3rem; }
-        .delay-3 { animation-delay: 4s; bottom: 15%; left: 20%; font-size: 5rem; }
-        .delay-4 { animation-delay: 1s; bottom: 10%; right: 10%; font-size: 4rem; }
-        .delay-5 { animation-delay: 3s; top: 50%; left: 50%; font-size: 6rem; opacity: 0.05; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -203,164 +196,6 @@
                     </div>
                 </div>
 
-                <div id="view-profile" class="view-section hidden fade-in max-w-3xl mx-auto">
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="h-40 bg-gradient-to-r from-blue-600 to-cyan-500"></div>
-                        <div class="px-10 pb-10">
-                            <div class="relative flex justify-between items-end -mt-16 mb-8">
-                                <div class="w-32 h-32 rounded-full bg-white p-1.5 shadow-xl">
-                                    <img id="profilePageImg" src="" class="w-full h-full rounded-full object-cover" alt="Profile">
-                                </div>
-                                <div class="mb-4"><span class="bg-green-100 text-green-700 text-xs font-extrabold px-4 py-1.5 rounded-full border border-green-200 flex items-center gap-2 shadow-sm"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> ONLINE</span></div>
-                            </div>
-                            <div class="text-center md:text-left mb-8"><h2 class="text-3xl font-extrabold text-gray-900 mb-1 tracking-tight" id="profilePageName">-</h2><p class="text-blue-600 font-semibold text-sm uppercase tracking-wider" id="profilePageRole">-</p></div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="p-6 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-id-badge"></i></div><span class="text-xs text-gray-400 uppercase font-bold tracking-wider">ID Pengguna</span></div><div class="font-mono font-bold text-gray-800 text-lg pl-11" id="profilePageId">-</div></div><div class="p-6 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-envelope"></i></div><span class="text-xs text-gray-400 uppercase font-bold tracking-wider">Email</span></div><div class="font-medium text-gray-800 text-lg pl-11" id="profilePageEmail">-</div></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-settings" class="view-section hidden fade-in max-w-5xl mx-auto">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white rounded-2xl shadow-lg p-8 border-t-4 border-blue-500 h-full">
-                            <h3 class="font-bold text-xl text-gray-800 mb-6 flex items-center"><span class="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center mr-3 text-blue-600"><i class="fa-solid fa-shield-halved"></i></span> Keamanan Akun</h3>
-                            <form onsubmit="app.updateAccount(event)" class="space-y-5">
-                                <div><label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Username Baru</label><input type="text" id="setNewUser" class="w-full border-2 border-gray-100 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 transition" placeholder="Kosongkan jika tidak ingin mengubah"></div>
-                                <div><label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Password Baru</label><input type="password" id="setNewPass" class="w-full border-2 border-gray-100 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 transition" placeholder="Kosongkan jika tidak ingin mengubah"></div>
-                                <div class="bg-red-50 p-5 rounded-xl border border-red-100 mt-4"><label class="block text-xs font-bold text-red-600 uppercase tracking-wide mb-2">Konfirmasi Password Lama (Wajib)</label><input type="password" id="setOldPass" required class="w-full border-2 border-red-200 rounded-xl p-3 text-sm bg-white focus:outline-none focus:border-red-500 transition" placeholder="Masukkan password saat ini untuk verifikasi"></div>
-                                <div class="text-right pt-2"><button type="submit" class="bg-blue-600 text-white text-sm font-bold px-8 py-3 rounded-xl hover:bg-blue-700 transition shadow-lg transform hover:-translate-y-0.5">SIMPAN PERUBAHAN</button></div>
-                            </form>
-                        </div>
-                        <div class="bg-white rounded-2xl shadow-lg p-8 border-t-4 border-gray-300 h-full flex flex-col justify-between">
-                            <div>
-                                <h3 class="font-bold text-xl text-gray-800 mb-6 flex items-center"><span class="bg-gray-100 w-10 h-10 rounded-full flex items-center justify-center mr-3 text-gray-600"><i class="fa-solid fa-circle-info"></i></span> Tentang Aplikasi</h3>
-                                <div class="space-y-4 text-sm">
-                                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><span>Nama Aplikasi</span><span class="font-bold text-gray-800">APAR Monitor</span></div>
-                                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><span>Versi</span><span class="font-bold bg-blue-600 text-white px-3 py-1 rounded-full text-xs">v1.1.0 Ultimate</span></div>
-                                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><span>Developer</span><span class="font-bold text-gray-800">K3KL RSJMM</span></div>
-                                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><span>Update Terakhir</span><span class="font-bold text-gray-800">29 Januari 2026</span></div>
-                                </div>
-                            </div>
-                            <div class="text-center text-xs text-gray-400 mt-6 pt-6 border-t font-medium">Hak Cipta Dilindungi © 2026 K3KL RSJMM</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-add-apar" class="view-section hidden fade-in max-w-2xl mx-auto">
-                    <div class="bg-white p-8 rounded-2xl shadow-lg">
-                        <button onclick="app.navigate('dashboard')" class="mb-6 text-gray-400 hover:text-blue-600 text-sm font-bold flex items-center gap-2 transition"><div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></div> Kembali</button>
-                        <h2 class="text-2xl font-black text-gray-800 mb-8 border-l-4 border-blue-600 pl-4" id="formTitle">Tambah APAR Baru</h2>
-                        <form onsubmit="app.saveApar(event)" class="space-y-5">
-                            <input type="hidden" id="editAparId"> 
-                            <div><label class="block text-gray-700 text-xs font-bold uppercase mb-2">Kode APAR</label><input type="text" id="inputKode" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition" placeholder="Cth: APAR 001"></div>
-                            <div><label class="block text-gray-700 text-xs font-bold uppercase mb-2">Lokasi Penempatan</label><input type="text" id="inputLokasi" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition" placeholder="Cth: IGD Lorong Kanan"></div>
-                            <div class="grid grid-cols-2 gap-5">
-                                <div><label class="block text-gray-700 text-xs font-bold uppercase mb-2">Jenis</label><select id="inputJenis" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-blue-500"><option>Powder</option><option>CO2</option><option>Foam</option><option>Clean Agent</option></select></div>
-                                <div><label class="block text-gray-700 text-xs font-bold uppercase mb-2">Berat (kg)</label><input type="text" inputmode="decimal" id="inputBerat" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500" placeholder="Cth: 3.5"></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-5">
-                                <div><label class="block text-gray-700 text-xs font-bold uppercase mb-2">Tanggal Pengisian</label><input type="date" id="inputRefill" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500"></div>
-                                <div><label class="block text-gray-700 text-xs font-bold uppercase mb-2">Tanggal Kadaluarsa</label><input type="date" id="inputExpired" required class="w-full border-2 border-red-100 rounded-xl px-4 py-3 bg-red-50 text-red-800 font-bold focus:outline-none focus:border-red-500"></div>
-                            </div>
-                            <div class="pt-6 flex justify-end">
-                                <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-blue-700 font-bold transition transform hover:-translate-y-0.5" id="btnSaveApar">SIMPAN DATA</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="view-detail" class="view-section hidden fade-in max-w-xl mx-auto">
-                    <button onclick="app.navigate('dashboard')" class="admin-only mb-6 text-gray-400 hover:text-blue-600 font-bold text-sm flex items-center gap-2 transition"><div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></div> Kembali Dashboard</button>
-                    
-                    <div id="captureArea" class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-blue-600 print-area relative mb-8">
-                        <div id="scanStatusBanner" class="hidden mb-8 p-6 rounded-xl text-center shadow-inner">
-                            <p class="text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-2">Status Terkini</p>
-                            <div id="scanStatusText" class="text-3xl font-black"></div>
-                            <div id="scanStatusDate" class="text-sm mt-2 font-medium text-gray-600 bg-white/50 inline-block px-3 py-1 rounded-full"></div>
-                        </div>
-                        
-                        <div class="relative text-center mb-8">
-                            <h3 id="detailKode" class="text-4xl font-black text-gray-800 mb-2 tracking-tight"></h3>
-                            <p id="detailLokasi" class="text-gray-500 font-medium text-lg"></p>
-                            
-                            <div class="admin-only absolute top-0 right-0 flex flex-col gap-2 no-print">
-                                <button onclick="app.editCurrentApar()" class="text-blue-600 bg-blue-50 w-10 h-10 rounded-full hover:bg-blue-600 hover:text-white transition shadow-sm flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="app.openMoveModal()" class="text-orange-600 bg-orange-50 w-10 h-10 rounded-full hover:bg-orange-600 hover:text-white transition shadow-sm flex items-center justify-center"><i class="fa-solid fa-truck-fast"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                            <div><span class="block text-gray-400 text-[10px] font-bold uppercase mb-1">Jenis</span><span id="detailJenis" class="font-bold text-gray-800 text-lg"></span></div>
-                            <div><span class="block text-gray-400 text-[10px] font-bold uppercase mb-1">Berat</span><span id="detailBerat" class="font-bold text-gray-800 text-lg"></span></div>
-                            <div><span class="block text-gray-400 text-[10px] font-bold uppercase mb-1">Tgl Isi</span><span id="detailRefill" class="font-bold text-gray-800"></span></div>
-                            <div><span class="block text-gray-400 text-[10px] font-bold uppercase mb-1">Kadaluarsa</span><span id="detailExpired" class="font-bold text-red-600"></span></div>
-                        </div>
-
-                        <div class="mt-8">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm flex justify-between items-center">Riwayat Pengecekan <span class="bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-[10px]">5 Terakhir</span></h4>
-                            <div id="detailHistoryBody" class="space-y-3"></div>
-                        </div>
-                        
-                        <div class="mt-8">
-                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm flex justify-between items-center">Riwayat Perpindahan</h4>
-                            <div id="movementHistoryBody" class="space-y-2"><div class="text-xs text-gray-400 italic text-center py-4">Belum ada riwayat.</div></div>
-                        </div>
-                        <div class="mt-8 text-center text-[10px] text-gray-300 show-on-capture block pt-4 border-t border-dashed">Sistem Monitoring APAR RSJMM Bogor - Generated by System</div>
-                    </div>
-                    
-                    <div id="tindakLanjutContainer" class="hidden admin-only mt-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-900 p-5 rounded-xl shadow-sm no-print mb-6 relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 text-yellow-100 text-6xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                        <div class="relative z-10">
-                            <p class="font-black text-lg mb-1">PERLU TINDAK LANJUT!</p>
-                            <p class="text-sm mb-3 font-medium">Unit ini dilaporkan RUSAK/EXPIRED.</p>
-                            <button onclick="app.showTindakLanjutModal()" class="bg-yellow-600 text-white px-5 py-2 rounded-lg text-xs font-bold shadow hover:bg-yellow-700 transition">INPUT PERBAIKAN</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
-                        <button onclick="app.shareStatus('print')" class="admin-only w-full bg-gray-800 text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-gray-900 transition flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-print"></i> CETAK STATUS</button>
-                        <button id="btnChecklistNow" class="admin-only w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-clipboard-check"></i> ISI CEKLIS</button>
-                    </div>
-                </div>
-
-                <div id="view-checklist" class="view-section hidden fade-in max-w-2xl mx-auto">
-                    <button onclick="app.backToDetail()" class="mb-6 text-gray-400 hover:text-blue-600 font-bold text-sm flex items-center gap-2 transition"><div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></div> Batalkan</button>
-                    <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-blue-600">
-                        <h2 class="text-2xl font-black text-gray-800 mb-8 text-center uppercase tracking-tight hidden md:block">Form Ceklis Bulanan</h2>
-                        <form onsubmit="app.submitChecklist(event)">
-                            <input type="hidden" id="checkAparId">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div><label class="block text-gray-500 text-xs font-bold uppercase mb-2">Petugas</label><input type="text" id="inputPetugas" required class="w-full border-2 border-gray-100 rounded-xl px-4 py-3 bg-gray-50 font-bold text-gray-700" readonly></div>
-                                <div><label class="block text-gray-500 text-xs font-bold uppercase mb-2">Tanggal Cek</label><input type="date" id="inputCheckDate" required class="w-full border-2 border-blue-100 rounded-xl px-4 py-3 font-bold text-blue-800 focus:outline-none focus:border-blue-500 transition"></div>
-                            </div>
-                            
-                            <div class="bg-blue-50/50 p-6 rounded-2xl mb-8 border border-blue-100">
-                                <p class="text-xs font-black text-blue-500 uppercase mb-4 tracking-wider"><i class="fa-solid fa-list-check mr-1"></i> Item Pemeriksaan Fisik</p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">1. Nozzle / Corong</span></label>
-                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">2. Pin Pengaman</span></label>
-                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">3. Segel Utuh</span></label>
-                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">4. Selang (Hose)</span></label>
-                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">5. Tekanan Bagus</span></label>
-                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">6. Body Tabung</span></label>
-                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">7. Hanger / Dudukan</span></label>
-                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">8. Isi Tidak Beku</span></label>
-                                </div>
-                            </div>
-
-                            <div id="liveStatusBox" class="mb-8 p-6 rounded-2xl border-2 text-center transition-all duration-300 transform scale-100"></div>
-                            
-                            <div id="evidenceContainer" class="hidden mb-8 bg-red-50 p-6 rounded-2xl border-2 border-dashed border-red-300 text-center">
-                                <div class="mb-3 text-red-400 text-3xl"><i class="fa-solid fa-camera"></i></div>
-                                <label class="block text-red-800 text-sm font-bold mb-2 uppercase tracking-wide">Wajib Foto Bukti Kerusakan</label>
-                                <input type="file" id="evidencePhoto" accept="image/*" capture="environment" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-white file:text-red-600 hover:file:bg-red-100 cursor-pointer">
-                            </div>
-
-                            <div class="mb-8"><label class="block text-gray-500 text-xs font-bold uppercase mb-2">Catatan Tambahan</label><textarea id="inputNotes" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 h-28 text-sm resize-none transition" placeholder="Tulis keterangan jika ada kerusakan..."></textarea></div>
-                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-600 tracking-wide transition transform hover:-translate-y-1">SIMPAN HASIL INSPEKSI</button>
-                        </form>
-                    </div>
-                </div>
-
                 <div id="view-k3-menu" class="view-section hidden fade-in max-w-4xl mx-auto">
                     <div class="bg-gradient-to-r from-red-600 to-red-500 rounded-2xl p-8 text-white shadow-lg mb-8 relative overflow-hidden">
                         <i class="fa-solid fa-shield-virus absolute -right-10 -bottom-10 text-9xl text-white/20"></i>
@@ -369,7 +204,7 @@
                     </div>
 
                     <h3 class="font-bold text-gray-700 mb-4 px-2 border-l-4 border-red-500 pl-3">Menu Pelaporan</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                         <div class="k3-card" onclick="app.openK3Form('B3')">
                             <i class="fa-solid fa-flask text-4xl text-yellow-500"></i>
                             <div class="font-bold text-gray-800">Tumpahan B3</div>
@@ -385,47 +220,123 @@
                             <div class="font-bold text-gray-800">Kecelakaan Kerja</div>
                             <div class="text-xs text-gray-400 mt-1">Formulir Lengkap</div>
                         </div>
+                        <div class="k3-card" onclick="app.navigate('k3-track')">
+                            <i class="fa-solid fa-search text-4xl text-gray-600"></i>
+                            <div class="font-bold text-gray-800">Lacak Status</div>
+                            <div class="text-xs text-gray-400 mt-1">Cek Progres Laporan</div>
+                        </div>
                     </div>
                 </div>
 
-                <div id="view-k3-form" class="view-section hidden fade-in max-w-2xl mx-auto">
+                <div id="view-k3-track" class="view-section hidden fade-in max-w-lg mx-auto">
+                    <button onclick="app.navigate('k3-menu')" class="mb-4 text-gray-500 font-bold text-sm flex items-center gap-2 hover:text-red-600"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border-t-8 border-gray-600 text-center">
+                        <h2 class="text-2xl font-black text-gray-800 mb-6">Lacak Laporan Anda</h2>
+                        <div class="relative mb-6">
+                            <input type="text" id="k3TrackInput" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pl-12 focus:outline-none focus:border-red-500 font-bold text-lg text-center uppercase" placeholder="MASUKKAN ID TIKET">
+                            <i class="fa-solid fa-ticket absolute left-4 top-4 text-gray-400 text-xl"></i>
+                        </div>
+                        <button onclick="app.trackK3Ticket()" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-black transition mb-6">CEK STATUS</button>
+                        
+                        <div id="k3TrackResult" class="hidden text-left bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-red-600" id="trJenis">-</span>
+                                <span class="text-xs font-bold px-2 py-1 rounded bg-yellow-100 text-yellow-800" id="trStatus">-</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-1"><i class="fa-solid fa-location-dot mr-1"></i> <span id="trLokasi">-</span></p>
+                            <p class="text-sm text-gray-600 mb-3"><i class="fa-regular fa-clock mr-1"></i> <span id="trWaktu">-</span></p>
+                            <div class="border-t border-gray-200 pt-2">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Tindak Lanjut Admin:</p>
+                                <p class="text-sm font-medium text-gray-800" id="trTL">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-k3-form" class="view-section hidden fade-in max-w-3xl mx-auto">
                     <button onclick="app.navigate('k3-menu')" class="mb-4 text-gray-500 font-bold text-sm flex items-center gap-2 hover:text-red-600"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
                     <div class="bg-white p-8 rounded-2xl shadow-lg border-t-8 border-red-600">
-                        <h2 class="text-2xl font-black text-gray-800 mb-6" id="k3FormTitle">Form Laporan</h2>
+                        <div class="text-center mb-8 border-b pb-4">
+                            <h2 class="text-xl font-black text-gray-800">LAPORAN PAK / KECELAKAAN KERJA PETUGAS</h2>
+                            <h3 class="text-sm font-bold text-gray-500">RSJ dr. H. MARZOEKI MAHDI BOGOR</h3>
+                        </div>
+
                         <form onsubmit="app.submitK3(event)">
                             <input type="hidden" id="k3Jenis">
-                            <div class="grid grid-cols-2 gap-4 mb-4">
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Tanggal & Jam</label><input type="datetime-local" id="k3Waktu" class="w-full border rounded-lg p-2.5 text-sm font-bold" required></div>
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Lokasi Kejadian</label><input type="text" id="k3Lokasi" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Nama Ruangan..." required></div>
-                            </div>
-                            <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">Nama Pelapor</label><input type="text" id="k3Pelapor" class="w-full border rounded-lg p-2.5 text-sm" required></div>
-
-                            <div id="field-b3" class="hidden space-y-4 mb-4 border-t pt-4">
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Jenis Bahan</label><input type="text" id="k3Bahan" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Cth: Cairan Infus / Darah"></div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Jumlah (Est)</label><input type="text" id="k3Jumlah" class="w-full border rounded-lg p-2.5 text-sm"></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Mengenai Orang?</label><select id="k3Orang" class="w-full border rounded-lg p-2.5 text-sm"><option>Tidak</option><option>Ya</option></select></div>
+                            
+                            <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <h4 class="font-bold text-red-600 mb-4 border-b border-red-200 pb-1">I. DATA PEGAWAI</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Nama</label><input type="text" id="k3KorbanNama" class="w-full border rounded-lg p-2 text-sm" required></div>
+                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Unit Kerja / Ruangan</label><input type="text" id="k3KorbanJabatan" class="w-full border rounded-lg p-2 text-sm" required></div>
+                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">NIP</label><input type="text" id="k3KorbanNIP" class="w-full border rounded-lg p-2 text-sm"></div>
+                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Tempat, Tanggal Lahir</label><input type="text" id="k3TTL" class="w-full border rounded-lg p-2 text-sm"></div>
+                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Jenis Kelamin</label><select id="k3Gender" class="w-full border rounded-lg p-2 text-sm"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
+                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Jabatan</label><select id="k3Jabatan" class="w-full border rounded-lg p-2 text-sm"><option>Dokter</option><option>Perawat</option><option>Nakes Lainnya</option><option>Non Nakes</option><option>PH / CS</option><option>Lainnya</option></select></div>
                                 </div>
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Penanganan</label><textarea id="k3Penanganan" class="w-full border rounded-lg p-2.5 text-sm h-20"></textarea></div>
                             </div>
 
-                            <div id="field-kk" class="hidden space-y-4 mb-4 border-t pt-4">
-                                <div class="bg-red-50 p-4 rounded-lg border border-red-100">
-                                    <h4 class="font-bold text-red-600 text-xs uppercase mb-3">Data Korban</h4>
-                                    <div class="grid grid-cols-2 gap-3 mb-2">
-                                        <input type="text" id="k3KorbanNama" class="w-full border rounded p-2 text-sm" placeholder="Nama Korban">
-                                        <input type="text" id="k3KorbanNIP" class="w-full border rounded p-2 text-sm" placeholder="NIP">
+                            <div class="mb-6">
+                                <h4 class="font-bold text-red-600 mb-4 border-b border-red-200 pb-1">II. RINCIAN KEJADIAN</h4>
+                                
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">1. Tanggal Kejadian</label><input type="date" id="k3TglKejadian" class="w-full border rounded-lg p-2 text-sm" required></div>
+                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Jam Kejadian</label><input type="time" id="k3JamKejadian" class="w-full border rounded-lg p-2 text-sm" required></div>
+                                </div>
+
+                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">2. Lokasi Kejadian</label><input type="text" id="k3Lokasi" class="w-full border rounded-lg p-2 text-sm" placeholder="Nama Ruangan / Tempat..." required></div>
+
+                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">3. Kronologis Kejadian</label><textarea id="k3Kronologi" class="w-full border rounded-lg p-2 text-sm h-24" placeholder="Ceritakan detail kejadian..." required></textarea></div>
+
+                                <div class="mb-4 p-3 border rounded-lg bg-gray-50">
+                                    <label class="block text-xs font-bold text-gray-500 mb-2">4. Jenis Kecelakaan Kerja</label>
+                                    <div class="grid grid-cols-1 gap-2 text-sm">
+                                        <label class="flex items-center"><input type="checkbox" name="k3JenisDetail" value="KNC" class="mr-2"> Kejadian Nyaris Cedera (KNC / Near miss)</label>
+                                        <label class="flex items-center"><input type="checkbox" name="k3JenisDetail" value="KTC" class="mr-2"> Kejadian Tidak Cedera (KTC / Non-Harm)</label>
+                                        <label class="flex items-center"><input type="checkbox" name="k3JenisDetail" value="KTD" class="mr-2"> Kejadian Tidak Diharapkan (KTD) / Sentinel</label>
                                     </div>
-                                    <input type="text" id="k3KorbanJabatan" class="w-full border rounded p-2 text-sm w-full" placeholder="Jabatan & Ruangan">
                                 </div>
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Kronologi Lengkap</label><textarea id="k3Kronologi" class="w-full border rounded-lg p-2.5 text-sm h-24"></textarea></div>
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Akibat Cedera</label><input type="text" id="k3Akibat" class="w-full border rounded-lg p-2.5 text-sm"></div>
+
+                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">5. Orang Pertama yang Melihat</label><select id="k3Saksi" class="w-full border rounded-lg p-2 text-sm"><option>Karyawan</option><option>Pasien</option><option>Keluarga Pasien</option><option>Lain-lain</option></select></div>
+
+                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">6. Tempat Kejadian Spesifik</label><input type="text" id="k3TempatSpesifik" class="w-full border rounded-lg p-2 text-sm" placeholder="Contoh: Kamar Mandi, Tangga..."></div>
+
+                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">7. Unit/Departemen Penyebab</label><input type="text" id="k3UnitPenyebab" class="w-full border rounded-lg p-2 text-sm"></div>
+
+                                <div class="mb-4 p-3 border rounded-lg bg-gray-50">
+                                    <label class="block text-xs font-bold text-gray-500 mb-2">8. Akibat Kecelakaan</label>
+                                    <div class="grid grid-cols-2 gap-2 text-sm">
+                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Kematian" class="mr-2"> Kematian</label>
+                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Cedera Berat" class="mr-2"> Cedera Berat</label>
+                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Cedera Sedang" class="mr-2"> Cedera Sedang</label>
+                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Cedera Ringan" class="mr-2"> Cedera Ringan</label>
+                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Tidak Ada Cedera" class="mr-2"> Tidak Ada Cedera</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">9. Tindakan yang Dilakukan</label><textarea id="k3Tindakan" class="w-full border rounded-lg p-2 text-sm h-16"></textarea></div>
+
+                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">10. Tindakan Oleh</label><input type="text" id="k3TindakanOleh" class="w-full border rounded-lg p-2 text-sm"></div>
+                            </div>
+
+                            <div class="mb-6 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                                <label class="block text-xs font-bold text-gray-800 mb-2 uppercase">Grading Risiko Kejadian (Diisi Pelapor)</label>
+                                <div class="grid grid-cols-4 gap-2 text-center">
+                                    <label class="cursor-pointer"><input type="radio" name="k3Grading" value="Biru" class="peer hidden"><div class="p-2 bg-white border rounded peer-checked:bg-blue-500 peer-checked:text-white transition">Biru</div></label>
+                                    <label class="cursor-pointer"><input type="radio" name="k3Grading" value="Hijau" class="peer hidden"><div class="p-2 bg-white border rounded peer-checked:bg-green-500 peer-checked:text-white transition">Hijau</div></label>
+                                    <label class="cursor-pointer"><input type="radio" name="k3Grading" value="Kuning" class="peer hidden"><div class="p-2 bg-white border rounded peer-checked:bg-yellow-500 peer-checked:text-white transition">Kuning</div></label>
+                                    <label class="cursor-pointer"><input type="radio" name="k3Grading" value="Merah" class="peer hidden"><div class="p-2 bg-white border rounded peer-checked:bg-red-500 peer-checked:text-white transition">Merah</div></label>
+                                </div>
                             </div>
 
                             <div class="mb-4 pt-2">
                                 <label class="block text-xs font-bold text-gray-500 mb-1">Foto Bukti (Wajib)</label>
                                 <input type="file" id="k3Foto" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
                             </div>
+                            
+                            <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">Nama Pembuat Laporan</label><input type="text" id="k3Pelapor" class="w-full border rounded-lg p-2 text-sm" required></div>
+                            <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">No WhatsApp</label><input type="number" id="k3WA" class="w-full border rounded-lg p-2 text-sm" required></div>
+
                             <div class="mb-6">
                                 <label class="block text-xs font-bold text-gray-500 mb-1">Tanda Tangan Pelapor</label>
                                 <div class="border-2 border-dashed border-gray-300 rounded-lg bg-gray-50"><canvas id="k3SigPad" class="sig-pad" height="150"></canvas></div>
@@ -494,6 +405,24 @@
                 <button onclick="document.getElementById('exportModal').classList.add('hidden')" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-bold text-gray-600 transition">Batal</button>
                 <button onclick="app.processExport()" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-bold shadow-lg transition flex items-center gap-2"><i class="fa-solid fa-download"></i> Download Excel</button>
             </div>
+        </div>
+    </div>
+    
+    <div id="successModal" class="fixed inset-0 z-[160] hidden flex items-center justify-center bg-black/70 backdrop-blur-sm fade-in">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center relative overflow-hidden transform scale-100 transition-all">
+            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500 animate-bounce">
+                <i class="fa-solid fa-check text-5xl"></i>
+            </div>
+            <h3 class="text-2xl font-black text-gray-800 mb-2">Laporan Terkirim!</h3>
+            <p class="text-gray-500 text-sm mb-6">Terima kasih atas laporannya.</p>
+            
+            <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200 relative">
+                <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">ID Tiket Anda</div>
+                <div class="text-3xl font-mono font-black text-gray-800" id="successTicketId">...</div>
+                <button onclick="app.copyTicket()" class="absolute top-2 right-2 text-gray-400 hover:text-green-600"><i class="fa-regular fa-copy"></i></button>
+            </div>
+
+            <button onclick="app.closeSuccessModal()" class="w-full py-3.5 rounded-xl bg-green-600 text-white font-bold shadow-lg hover:bg-green-700 transition transform hover:-translate-y-0.5">Tutup</button>
         </div>
     </div>
 
@@ -570,10 +499,16 @@
             },
             cancelLogin: function() { document.getElementById('login-screen').classList.add('hidden'); const scanId = new URLSearchParams(window.location.search).get('id'); if (scanId) { document.getElementById('scan-choice-screen').classList.remove('hidden'); } else { document.getElementById('login-screen').classList.remove('hidden'); } },
             
-            // LOGOUT
-            handleLogout: function() { document.getElementById('logoutModal').classList.remove('hidden'); },
+            // REVISI: Logika Logout dengan Modal Baru
+            handleLogout: function() { 
+                document.getElementById('logoutModal').classList.remove('hidden');
+            },
             finalizeLogout: function() {
-                localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userRole'); localStorage.removeItem('petugasName'); localStorage.removeItem('petugasId'); localStorage.removeItem('petugasPhoto'); 
+                localStorage.removeItem('isLoggedIn'); 
+                localStorage.removeItem('userRole'); 
+                localStorage.removeItem('petugasName'); 
+                localStorage.removeItem('petugasId'); 
+                localStorage.removeItem('petugasPhoto'); 
                 location.reload();
             },
             
@@ -885,11 +820,6 @@
                 document.getElementById('k3Waktu').value = now.toISOString().slice(0,16);
                 document.getElementById('k3Pelapor').value = localStorage.getItem('petugasName') || '';
 
-                document.getElementById('field-b3').classList.add('hidden');
-                document.getElementById('field-kk').classList.add('hidden');
-                if(type === 'B3') document.getElementById('field-b3').classList.remove('hidden');
-                if(type === 'KK' || type === 'Jarum') document.getElementById('field-kk').classList.remove('hidden');
-
                 setTimeout(() => this.initSigPad(), 500);
             },
 
@@ -918,10 +848,19 @@
                 e.preventDefault();
                 this.toggleLoading(true, "Mengirim Laporan K3...");
                 
+                // MENGUMPULKAN DATA DARI FORM BARU
                 const jenis = document.getElementById('k3Jenis').value;
-                const desc = jenis === 'Tumpahan B3' 
-                    ? `Bahan: ${document.getElementById('k3Bahan').value}, Jml: ${document.getElementById('k3Jumlah').value}, Penanganan: ${document.getElementById('k3Penanganan').value}`
-                    : document.getElementById('k3Kronologi').value;
+                const desc = document.getElementById('k3Kronologi').value; // Menggunakan kronologi sebagai deskripsi utama
+
+                // Checkbox Jenis Kecelakaan
+                let jenisDetail = [];
+                document.querySelectorAll('input[name="k3JenisDetail"]:checked').forEach(c => jenisDetail.push(c.value));
+                
+                // Radio Akibat
+                let akibat = document.querySelector('input[name="k3Akibat"]:checked')?.value || "";
+
+                // Radio Grading
+                let grading = document.querySelector('input[name="k3Grading"]:checked')?.value || "";
 
                 let fotoBase64 = "";
                 const fileInput = document.getElementById('k3Foto');
@@ -932,25 +871,44 @@
                 const fd = new FormData();
                 fd.append('action', 'input');
                 fd.append('jenis', jenis);
-                fd.append('ruangan', document.getElementById('k3Lokasi').value);
+                fd.append('ruangan', document.getElementById('k3Lokasi').value); // Menggunakan lokasi sebagai ruangan kejadian
                 fd.append('pelapor', document.getElementById('k3Pelapor').value);
-                fd.append('waktu_kejadian', document.getElementById('k3Waktu').value);
+                
+                // WAKTU: Gabungkan Tgl & Jam
+                let tgl = document.getElementById('k3TglKejadian').value;
+                let jam = document.getElementById('k3JamKejadian').value;
+                fd.append('waktu_kejadian', tgl + 'T' + jam); 
+
                 fd.append('deskripsi', desc);
                 fd.append('ttd', this.data.sigPad.toDataURL());
                 fd.append('doc_b3', fotoBase64); 
 
-                if(jenis !== 'Tumpahan B3') {
-                    fd.append('nama_pegawai', document.getElementById('k3KorbanNama').value);
-                    fd.append('nip', document.getElementById('k3KorbanNIP').value);
-                    fd.append('jabatan', document.getElementById('k3KorbanJabatan').value);
-                    fd.append('akibat', document.getElementById('k3Akibat').value);
-                }
+                // Field Tambahan Sesuai Formulir RS
+                fd.append('nama_pegawai', document.getElementById('k3KorbanNama').value);
+                fd.append('jabatan', document.getElementById('k3KorbanJabatan').value); // Unit Kerja
+                fd.append('nip', document.getElementById('k3KorbanNIP').value);
+                fd.append('ttl', document.getElementById('k3TTL').value);
+                fd.append('gender', document.getElementById('k3Gender').value);
+                fd.append('status_pegawai', document.getElementById('k3Jabatan').value); // Jabatan Dropdown
+
+                fd.append('jenis_detail', jenisDetail.join(', '));
+                fd.append('saksi', document.getElementById('k3Saksi').value);
+                fd.append('tempat_detail', document.getElementById('k3TempatSpesifik').value);
+                fd.append('ruangan_korban', document.getElementById('k3UnitPenyebab').value); // Unit Penyebab
+                fd.append('akibat', akibat);
+                fd.append('tindakan', document.getElementById('k3Tindakan').value);
+                fd.append('tindakan_oleh', document.getElementById('k3TindakanOleh').value);
+                fd.append('grading', grading);
+                fd.append('wa', document.getElementById('k3WA').value);
 
                 try {
                     const r = await fetch(API_K3, { method: 'POST', body: fd });
                     const d = await r.json();
                     if(d.result === 'success') {
-                        alert("Laporan Terkirim! ID Tiket: " + d.ticket);
+                        // TAMPILKAN POPUP SUKSES MODERN
+                        document.getElementById('successTicketId').innerText = d.ticket;
+                        document.getElementById('successModal').classList.remove('hidden');
+                        
                         this.navigate('k3-menu');
                     } else {
                         alert("Gagal: " + d.error);
@@ -960,6 +918,48 @@
                 } finally {
                     this.toggleLoading(false);
                 }
+            },
+
+            // FITUR LACAK STATUS
+            trackK3Ticket: async function() {
+                const id = document.getElementById('k3TrackInput').value.trim();
+                if(!id) return alert("Masukkan ID Tiket!");
+                
+                this.toggleLoading(true, "Melacak...");
+                try {
+                    const r = await fetch(API_K3 + "?action=read&t=" + Date.now());
+                    const d = await r.json();
+                    const item = d.find(x => String(x.ID_Tiket).trim() === id);
+                    
+                    if(item) {
+                        document.getElementById('k3TrackResult').classList.remove('hidden');
+                        document.getElementById('trJenis').innerText = item.Jenis_Insiden;
+                        document.getElementById('trStatus').innerText = item.Status;
+                        
+                        // Warna Badge
+                        const badge = document.getElementById('trStatus');
+                        if(item.Status === 'Selesai') badge.className = "text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800";
+                        else if(item.Status === 'Diproses') badge.className = "text-xs font-bold px-2 py-1 rounded bg-yellow-100 text-yellow-800";
+                        else badge.className = "text-xs font-bold px-2 py-1 rounded bg-red-100 text-red-800";
+
+                        document.getElementById('trLokasi').innerText = item.Ruangan;
+                        document.getElementById('trWaktu').innerText = new Date(item.Waktu).toLocaleString('id-ID');
+                        document.getElementById('trTL').innerText = item.Tindak_Lanjut || "Belum ada tindak lanjut.";
+                    } else {
+                        alert("Tiket tidak ditemukan!");
+                        document.getElementById('k3TrackResult').classList.add('hidden');
+                    }
+                } catch(e) { alert("Gagal melacak."); }
+                finally { this.toggleLoading(false); }
+            },
+
+            closeSuccessModal: function() {
+                document.getElementById('successModal').classList.add('hidden');
+            },
+
+            copyTicket: function() {
+                const t = document.getElementById('successTicketId').innerText;
+                navigator.clipboard.writeText(t).then(() => alert("Tiket Disalin!"));
             },
 
             fetchK3Data: async function(showLoading = true) {
@@ -1027,25 +1027,82 @@
                 const area = document.getElementById('pdf-content-area');
                 this.toggleLoading(true, "Membuat PDF...");
 
+                // MAPPING DATA
+                let nama = d.Nama_Pegawai || "-";
+                let ruangan = d.Jabatan || "-"; // Menggunakan Jabatan sebagai Unit Kerja sesuai mapping form
+                let nip = d.NIP || "-";
+                let ttl = d.TTL || "-";
+                let gender = (d.Gender == 'L') ? "Laki-laki" : "Perempuan";
+                let jabatan = d.Status_Pegawai || "-"; // Status Pegawai sebagai Jabatan
+                let waktu = d.Waktu_Kejadian ? new Date(d.Waktu_Kejadian).toLocaleString('id-ID') : "-";
+                let lokasi = d.Ruangan || "-";
+                let kronologi = d.Deskripsi || "-";
+                let jenis = d.Jenis_Kecelakaan_Detail || "-";
+                let saksi = d.Saksi || "-";
+                let tempat = d.Tempat_Detail || "-";
+                let akibat = d.Akibat || "-";
+                let tindakan = d.Tindakan_Awal || d.Tindakan || "-"; // Mapping fallback
+                let oleh = d.Tindakan_Oleh || "-";
+                let grading = d.Grading || "-";
+                let pelapor = d.Pelapor || "-";
+                let wa = d.No_WA || "-";
+
+                // TANGGAL CETAK
+                let tglLapor = d.Waktu ? new Date(d.Waktu) : new Date();
+                let months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                let bogorDate = "Bogor, " + tglLapor.getDate() + " " + months[tglLapor.getMonth()] + " " + tglLapor.getFullYear();
+
                 area.innerHTML = `
-                    <h2 style="text-align:center; margin-bottom:0;">LAPORAN INSIDEN K3</h2>
-                    <h4 style="text-align:center; margin-top:5px;">RSJMM BOGOR</h4>
-                    <hr>
-                    <table border="1" style="width:100%; border-collapse:collapse; margin-top:20px;">
-                        <tr><td style="padding:5px; background:#eee; width:30%;"><b>ID Tiket</b></td><td style="padding:5px;">${d.ID_Tiket}</td></tr>
-                        <tr><td style="padding:5px; background:#eee;"><b>Tanggal Lapor</b></td><td style="padding:5px;">${new Date(d.Waktu).toLocaleString('id-ID')}</td></tr>
-                        <tr><td style="padding:5px; background:#eee;"><b>Jenis Insiden</b></td><td style="padding:5px;">${d.Jenis_Insiden}</td></tr>
-                        <tr><td style="padding:5px; background:#eee;"><b>Lokasi</b></td><td style="padding:5px;">${d.Ruangan}</td></tr>
-                        <tr><td style="padding:5px; background:#eee;"><b>Pelapor</b></td><td style="padding:5px;">${d.Pelapor}</td></tr>
-                        <tr><td style="padding:5px; background:#eee;"><b>Deskripsi</b></td><td style="padding:5px;">${d.Deskripsi}</td></tr>
-                        <tr><td style="padding:5px; background:#eee;"><b>Status Akhir</b></td><td style="padding:5px;">${d.Status} (TL: ${d.Tindak_Lanjut || '-'})</td></tr>
-                    </table>
-                    ${d.Dokumentasi_B3 ? `<br><img src="${d.Dokumentasi_B3}" style="max-width:300px; display:block; margin:10px auto; border:1px solid #ccc;">` : ''}
-                    <br><br>
-                    <div style="text-align:right;">
-                        <p>Mengetahui,</p>
-                        ${d.Tanda_Tangan ? `<img src="${d.Tanda_Tangan}" height="50">` : '<br><br>'}
-                        <p><b>( ${d.Pelapor} )</b></p>
+                    <div style="font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4;">
+                        <h3 style="text-align:center; font-weight:bold; margin-bottom:0;">LAPORAN PAK / KECELAKAAN KERJA PETUGAS</h3>
+                        <h4 style="text-align:center; font-weight:bold; margin-top:5px;">RSJ dr. H. MARZOEKI MAHDI BOGOR</h4>
+                        <hr style="border: 1px solid black; margin-bottom: 20px;">
+                        
+                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:5px;">I. DATA PEGAWAI</div>
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+                            <tr><td width="160">Nama</td><td width="10">:</td><td>${nama}</td></tr>
+                            <tr><td>Unit Kerja</td><td>:</td><td>${ruangan}</td></tr>
+                            <tr><td>NIP</td><td>:</td><td>${nip}</td></tr>
+                            <tr><td>Tempat, Tanggal Lahir</td><td>:</td><td>${ttl}</td></tr>
+                            <tr><td>Jenis Kelamin</td><td>:</td><td>${gender}</td></tr>
+                            <tr><td>Jabatan</td><td>:</td><td>${jabatan}</td></tr>
+                        </table>
+
+                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:5px;">II. RINCIAN KEJADIAN</div>
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+                            <tr><td width="160">Tanggal dan Waktu</td><td width="10">:</td><td>${waktu}</td></tr>
+                            <tr><td>Lokasi Kejadian</td><td>:</td><td>${lokasi}</td></tr>
+                            <tr><td>Jenis Kecelakaan</td><td>:</td><td>${jenis}</td></tr>
+                            <tr><td>Saksi Mata</td><td>:</td><td>${saksi}</td></tr>
+                            <tr><td>Tempat Spesifik</td><td>:</td><td>${tempat}</td></tr>
+                            <tr><td>Akibat Kecelakaan</td><td>:</td><td>${akibat}</td></tr>
+                            <tr><td>Tindakan Dilakukan</td><td>:</td><td>${tindakan}</td></tr>
+                            <tr><td>Tindakan Oleh</td><td>:</td><td>${oleh}</td></tr>
+                            <tr><td colspan="3" style="padding-top:10px;"><b>Kronologis Kejadian:</b><div style="border:1px solid #ccc; padding:5px; margin-top:5px; min-height:50px;">${kronologi}</div></td></tr>
+                        </table>
+
+                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:5px;">III. GRADING RISIKO</div>
+                        <div style="margin-bottom:20px;">Risiko: <b>${grading}</b></div>
+
+                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:5px;">IV. IDENTITAS PELAPOR</div>
+                        <table style="width:100%; border-collapse:collapse;">
+                            <tr><td width="160">Nama Pelapor</td><td width="10">:</td><td>${pelapor}</td></tr>
+                            <tr><td>No. WhatsApp</td><td>:</td><td>${wa}</td></tr>
+                        </table>
+
+                        <br><br>
+                        <table style="width:100%; text-align:center;">
+                            <tr>
+                                <td width="50%"></td>
+                                <td width="50%">
+                                    ${bogorDate}<br>Pelapor,<br><br>
+                                    ${d.Tanda_Tangan ? `<img src="${d.Tanda_Tangan}" height="60">` : '<br><br>'}
+                                    <br><b>( ${pelapor} )</b>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        ${d.Dokumentasi_B3 ? `<div style="page-break-before:always; text-align:center;"><h4>Lampiran Dokumentasi</h4><img src="${d.Dokumentasi_B3}" style="max-width:400px; border:1px solid #ccc;"></div>` : ''}
                     </div>
                 `;
 
