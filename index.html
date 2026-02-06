@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Monitoring Terintegrasi - RSJMM Bogor</title>
+    <title>Sistem Monitoring APAR - RSJMM Bogor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .floating-icon { position: absolute; opacity: 0.15; color: white; animation: float 6s ease-in-out infinite; z-index: 0; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } }
+        .delay-1 { animation-delay: 0s; top: 10%; left: 10%; font-size: 4rem; }
+        .delay-2 { animation-delay: 2s; top: 20%; right: 15%; font-size: 3rem; }
+        .delay-3 { animation-delay: 4s; bottom: 15%; left: 20%; font-size: 5rem; }
+        .delay-4 { animation-delay: 1s; bottom: 10%; right: 10%; font-size: 4rem; }
+        .delay-5 { animation-delay: 3s; top: 50%; left: 50%; font-size: 6rem; opacity: 0.05; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -26,29 +32,19 @@
         body.scan-mode #top-header { display: none !important; }
         body.scan-mode #main-content { margin-left: 0 !important; width: 100% !important; padding-top: 0 !important; }
         body.scan-mode main { padding: 1rem !important; }
+        body.scan-mode #view-dashboard { display: none !important; }
+        body.scan-mode #backBtnDetail { display: none !important; } 
+        body.scan-mode #view-detail .admin-only { display: inline-flex !important; } 
+        body.scan-mode #view-detail #tindakLanjutContainer.admin-only { display: block !important; }
+        body.scan-mode #view-detail #btnChecklistNow.admin-only { display: flex !important; }
+        body.scan-mode #view-add-apar .admin-only { display: block !important; }
         .active-nav { background-color: #eff6ff; color: #2563eb; border-right: 4px solid #2563eb; }
         .inactive-nav { color: #64748b; }
         .inactive-nav:hover { background-color: #f8fafc; color: #334155; }
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; }
         #toast-msg { display: none; transition: opacity 0.5s ease; }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; }
-        
-        .k3-card { background: white; border-radius: 1rem; padding: 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #f3f4f6; transition: all 0.2s; cursor: pointer; }
-        .k3-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: #fca5a5; }
-        .k3-card i { margin-bottom: 0.5rem; display: inline-block; }
-        canvas.sig-pad { border: 2px dashed #cbd5e1; border-radius: 0.5rem; width: 100%; background: #fff; cursor: crosshair; touch-action: none; }
-
-        @media print { 
-            body * { visibility: hidden; } 
-            body.printing-label #labelPrintArea, body.printing-label #labelPrintArea * { visibility: visible; } 
-            body.printing-label #labelPrintArea { position: absolute; left: 0; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; padding-top: 20px; } 
-            body.printing-all #printAllArea, body.printing-all #printAllArea * { visibility: visible; } 
-            body.printing-all #printAllArea { position: absolute; left: 0; top: 0; width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; } 
-            body.printing-k3 #k3QrPrintArea, body.printing-k3 #k3QrPrintArea * { visibility: visible; }
-            body.printing-k3 #k3QrPrintArea { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-            .qr-card { border: 1px solid #000; padding: 10px; text-align: center; page-break-inside: avoid; } 
-            body:not(.printing-label):not(.printing-all):not(.printing-k3) .no-print { display: none !important; } 
-        }
+        @media print { body * { visibility: hidden; } body.printing-label #labelPrintArea, body.printing-label #labelPrintArea * { visibility: visible; } body.printing-label #labelPrintArea { position: absolute; left: 0; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; padding-top: 20px; } body.printing-all #printAllArea, body.printing-all #printAllArea * { visibility: visible; } body.printing-all #printAllArea { position: absolute; left: 0; top: 0; width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; } .qr-card { border: 1px solid #000; padding: 10px; text-align: center; page-break-inside: avoid; } body:not(.printing-label):not(.printing-all) .no-print { display: none !important; } }
     </style>
 </head>
 <body class="text-gray-800 font-sans" onclick="app.closeDropdown(event)">
@@ -89,24 +85,7 @@
         <div class="absolute bottom-4 text-white/50 text-[10px]">Copyright ©2026 Instalasi K3KL All Rights Reserved</div>
     </div>
 
-    <div id="scan-choice-screen" class="hidden fixed inset-0 bg-gray-100 z-[90] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full fade-in text-center border-t-8 border-blue-600 relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-50 rounded-full blur-2xl"></div><div class="absolute -bottom-10 -left-10 w-32 h-32 bg-green-50 rounded-full blur-2xl"></div>
-            <div class="bg-blue-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce shadow-inner"><i class="fa-solid fa-qrcode text-5xl text-blue-600"></i></div>
-            <h2 class="text-2xl font-extrabold text-gray-800 mb-2">APAR Terdeteksi!</h2><p class="text-sm text-gray-500 mb-8" id="scanChoiceKode">Silakan pilih menu akses anda:</p>
-            <button onclick="app.handleScanOption('inspect')" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg mb-4 flex items-center gap-4 transition transform hover:scale-105 group">
-                <div class="bg-white/20 p-3 rounded-lg group-hover:bg-white/30 transition"><i class="fa-solid fa-user-shield text-2xl"></i></div>
-                <div class="text-left flex-1"><div class="text-[10px] uppercase text-blue-100 tracking-wider font-bold">Login Petugas</div><div class="text-lg leading-tight">INSPEKSI UNIT</div></div><i class="fa-solid fa-chevron-right text-blue-200"></i>
-            </button>
-            <button onclick="app.handleScanOption('history')" class="w-full bg-white border-2 border-gray-100 hover:border-blue-200 hover:bg-blue-50 text-gray-700 font-bold py-4 px-6 rounded-xl shadow-sm flex items-center gap-4 transition transform hover:scale-105 group">
-                <div class="bg-gray-100 p-3 rounded-lg group-hover:bg-white transition"><i class="fa-solid fa-clock-rotate-left text-2xl text-gray-500 group-hover:text-blue-500"></i></div>
-                <div class="text-left flex-1"><div class="text-[10px] uppercase text-gray-400 tracking-wider font-bold group-hover:text-blue-400">Akses Publik</div><div class="text-lg leading-tight text-gray-800 group-hover:text-blue-700">LIHAT RIWAYAT</div></div><i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-blue-300"></i>
-            </button>
-        </div>
-    </div>
-
     <div id="main-app" class="hidden flex h-screen overflow-hidden bg-gray-100">
-        
         <aside id="sidebar" class="w-64 bg-white shadow-xl flex flex-col z-20 hidden md:flex h-full fixed top-0 left-0 transition-all duration-300">
             <div class="h-20 flex items-center justify-between px-6 border-b border-gray-100">
                 <div class="flex items-center gap-3">
@@ -123,15 +102,13 @@
                 <button onclick="app.navigate('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition active-nav"><i class="fa-solid fa-house w-5 text-center"></i> Beranda</button>
                 <div class="admin-only space-y-2">
                     <button onclick="app.navigate('profile')" id="nav-profile" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition inactive-nav"><i class="fa-solid fa-user-tie w-5 text-center"></i> Profil User</button>
-                    <button onclick="app.navigate('k3-admin')" id="nav-k3-admin" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition inactive-nav"><i class="fa-solid fa-helmet-safety w-5 text-center"></i> Safety K3</button>
                     <button onclick="app.navigate('settings')" id="nav-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition inactive-nav"><i class="fa-solid fa-gear w-5 text-center"></i> Pengaturan</button>
                 </div>
             </div>
-            <div class="p-6 border-t border-gray-100"><button onclick="app.handleLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition shadow-sm"><i class="fa-solid fa-power-off"></i> Keluar Aplikasi</button><div class="text-center mt-4 text-[10px] text-gray-300 font-medium">© 2026 Instalasi K3KL</div></div>
+            <div class="p-6 border-t border-gray-100"><button onclick="app.handleLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition shadow-sm"><i class="fa-solid fa-power-off"></i>Logout</button><div class="text-center mt-4 text-[10px] text-gray-300 font-medium">© 2026 Instalasi K3KL</div></div>
         </aside>
 
         <div id="main-content" class="flex-1 flex flex-col md:ml-64 transition-all duration-300 relative w-full">
-            
             <header id="top-header" class="h-auto md:h-24 bg-gradient-to-r from-blue-700 to-blue-600 text-white shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center px-8 py-5 z-10">
                 <div class="flex items-center gap-4">
                     <button id="headerToggleBtn" onclick="app.toggleSidebar()" class="hidden text-white hover:text-blue-200 transition focus:outline-none mr-2">
@@ -152,7 +129,6 @@
             </header>
 
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-8 pb-24">
-                
                 <div id="view-dashboard" class="view-section fade-in space-y-8">
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group"><div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i class="fa-solid fa-fire-extinguisher text-6xl text-blue-600"></i></div><div class="text-gray-400 text-xs font-bold uppercase mb-2 tracking-wider">Total APAR</div><div class="text-4xl font-black text-gray-800" id="statTotal">0</div><div class="mt-2 w-12 h-1 bg-blue-500 rounded-full"></div></div>
@@ -170,10 +146,6 @@
                                 <div class="bg-gray-50 rounded-xl p-4 hover:bg-blue-50 transition border border-transparent hover:border-blue-100"><div class="text-xs text-gray-500 font-bold uppercase mb-1">Clean Agent</div><div class="text-2xl font-black text-gray-800" id="countClean">0</div></div>
                             </div>
                         </div>
-                        <div class="bg-white rounded-2xl shadow-sm p-6 border border-orange-100">
-                            <h3 class="font-bold text-orange-800 mb-6 flex items-center text-lg"><span class="bg-orange-100 text-orange-600 w-8 h-8 rounded-lg flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-truck-fast"></i></span> Perpindahan</h3>
-                            <div id="dashboardMovements" class="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scroll"></div>
-                        </div>
                     </div>
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                         <div class="flex flex-wrap gap-3 w-full md:w-auto">
@@ -186,7 +158,6 @@
                             <button onclick="app.navigate('add-apar')" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow hover:bg-blue-700 transition text-xs font-bold admin-only flex items-center gap-2"><i class="fa-solid fa-plus"></i> Tambah</button>
                             <button onclick="app.printAllLabels()" class="bg-purple-600 text-white px-5 py-2.5 rounded-lg shadow hover:bg-purple-700 transition text-xs font-bold admin-only flex items-center gap-2"><i class="fa-solid fa-qrcode"></i> QR</button>
                             <button onclick="app.openExportModal()" class="bg-green-600 text-white px-5 py-2.5 rounded-lg shadow hover:bg-green-700 transition text-xs font-bold admin-only flex items-center gap-2"><i class="fa-solid fa-file-excel"></i> Excel</button>
-                            <button onclick="app.resetDatabase()" class="bg-white text-red-600 px-5 py-2.5 rounded-lg border border-red-200 hover:bg-red-50 transition text-xs font-bold admin-only flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> Reset</button>
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
@@ -196,920 +167,205 @@
                     </div>
                 </div>
 
-                <div id="view-k3-menu" class="view-section hidden fade-in max-w-4xl mx-auto">
-                    <div class="bg-gradient-to-r from-red-600 to-red-500 rounded-2xl p-8 text-white shadow-lg mb-8 relative overflow-hidden">
-                        <i class="fa-solid fa-shield-virus absolute -right-10 -bottom-10 text-9xl text-white/20"></i>
-                        <h2 class="text-3xl font-black mb-2">SAFETY FIRST!</h2>
-                        <p class="text-red-100">Sistem Pelaporan Insiden K3RS Terintegrasi</p>
-                    </div>
-
-                    <h3 class="font-bold text-gray-700 mb-4 px-2 border-l-4 border-red-500 pl-3">Menu Pelaporan</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                        <div class="k3-card" onclick="app.openK3Form('B3')">
-                            <i class="fa-solid fa-flask text-4xl text-yellow-500"></i>
-                            <div class="font-bold text-gray-800">Tumpahan B3</div>
-                            <div class="text-xs text-gray-400 mt-1">Lapor Tumpahan Kimia</div>
+                <div id="view-detail" class="view-section hidden fade-in max-w-xl mx-auto">
+                    <button id="backBtnDetail" onclick="app.handleDetailBack()" class="mb-6 text-gray-400 hover:text-blue-600 font-bold text-sm flex items-center gap-2 transition"><div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></div> Kembali</button>
+                    
+                    <div id="captureArea" class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-blue-600 print-area relative mb-8">
+                        <div id="scanStatusBanner" class="hidden mb-8 p-6 rounded-xl text-center shadow-inner">
+                            <p class="text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-2">Status Terkini</p>
+                            <div id="scanStatusText" class="text-3xl font-black"></div>
+                            <div id="scanStatusDate" class="text-sm mt-2 font-medium text-gray-600 bg-white/50 inline-block px-3 py-1 rounded-full"></div>
                         </div>
-                        <div class="k3-card" onclick="app.openK3Form('Jarum')">
-                            <i class="fa-solid fa-syringe text-4xl text-blue-500"></i>
-                            <div class="font-bold text-gray-800">Tertusuk Jarum</div>
-                            <div class="text-xs text-gray-400 mt-1">Insiden Medis</div>
-                        </div>
-                        <div class="k3-card" onclick="app.openK3Form('KK')">
-                            <i class="fa-solid fa-user-injured text-4xl text-red-500"></i>
-                            <div class="font-bold text-gray-800">Kecelakaan Kerja</div>
-                            <div class="text-xs text-gray-400 mt-1">Formulir Lengkap</div>
-                        </div>
-                        <div class="k3-card" onclick="app.navigate('k3-track')">
-                            <i class="fa-solid fa-search text-4xl text-gray-600"></i>
-                            <div class="font-bold text-gray-800">Lacak Status</div>
-                            <div class="text-xs text-gray-400 mt-1">Cek Progres Laporan</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-k3-track" class="view-section hidden fade-in max-w-lg mx-auto">
-                    <button onclick="app.navigate('k3-menu')" class="mb-4 text-gray-500 font-bold text-sm flex items-center gap-2 hover:text-red-600"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-                    <div class="bg-white p-8 rounded-2xl shadow-lg border-t-8 border-gray-600 text-center">
-                        <h2 class="text-2xl font-black text-gray-800 mb-6">Lacak Laporan Anda</h2>
-                        <div class="relative mb-6">
-                            <input type="text" id="k3TrackInput" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pl-12 focus:outline-none focus:border-red-500 font-bold text-lg text-center uppercase" placeholder="MASUKKAN ID TIKET">
-                            <i class="fa-solid fa-ticket absolute left-4 top-4 text-gray-400 text-xl"></i>
-                        </div>
-                        <button onclick="app.trackK3Ticket()" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-black transition mb-6">CEK STATUS</button>
                         
-                        <div id="k3TrackResult" class="hidden text-left bg-gray-50 p-4 rounded-xl border border-gray-200">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="font-bold text-red-600" id="trJenis">-</span>
-                                <span class="text-xs font-bold px-2 py-1 rounded bg-yellow-100 text-yellow-800" id="trStatus">-</span>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-1"><i class="fa-solid fa-location-dot mr-1"></i> <span id="trLokasi">-</span></p>
-                            <p class="text-sm text-gray-600 mb-3"><i class="fa-regular fa-clock mr-1"></i> <span id="trWaktu">-</span></p>
-                            <div class="border-t border-gray-200 pt-2">
-                                <p class="text-[10px] font-bold text-gray-400 uppercase">Tindak Lanjut Admin:</p>
-                                <p class="text-sm font-medium text-gray-800" id="trTL">-</p>
+                        <div class="relative text-center mb-8">
+                            <h3 id="detailKode" class="text-4xl font-black text-gray-800 mb-2 tracking-tight"></h3>
+                            <p id="detailLokasi" class="text-gray-500 font-medium text-lg"></p>
+                            <div class="admin-only absolute top-0 right-0 flex flex-col gap-2 no-print">
+                                <button onclick="app.editCurrentApar()" class="text-blue-600 bg-blue-50 w-10 h-10 rounded-full hover:bg-blue-600 hover:text-white transition shadow-sm flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="app.openMoveModal()" class="text-orange-600 bg-orange-50 w-10 h-10 rounded-full hover:bg-orange-600 hover:text-white transition shadow-sm flex items-center justify-center"><i class="fa-solid fa-truck-fast"></i></button>
                             </div>
                         </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                            <div><span class="block text-gray-400 text-[10px] font-bold uppercase mb-1">Jenis</span><span id="detailJenis" class="font-bold text-gray-800 text-lg"></span></div>
+                            <div><span class="block text-gray-400 text-[10px] font-bold uppercase mb-1">Berat</span><span id="detailBerat" class="font-bold text-gray-800 text-lg"></span></div>
+                            <div><span class="block text-gray-400 text-[10px] font-bold uppercase mb-1">Tgl Isi</span><span id="detailRefill" class="font-bold text-gray-800"></span></div>
+                            <div><span class="block text-gray-400 text-[10px] font-bold uppercase mb-1">Kadaluarsa</span><span id="detailExpired" class="font-bold text-red-600"></span></div>
+                        </div>
+
+                        <div class="mt-8">
+                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm flex justify-between items-center">Riwayat Pengecekan <span class="bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-[10px]">Terbaru diatas</span></h4>
+                            <div id="detailHistoryBody" class="space-y-3"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="tindakLanjutContainer" class="hidden admin-only mt-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-900 p-5 rounded-xl shadow-sm no-print mb-6 relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-yellow-100 text-6xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="relative z-10">
+                            <p class="font-black text-lg mb-1">PERLU TINDAK LANJUT!</p>
+                            <p class="text-sm mb-3 font-medium">Unit ini dilaporkan RUSAK/EXPIRED.</p>
+                            <button onclick="app.showTindakLanjutModal()" class="bg-yellow-600 text-white px-5 py-2 rounded-lg text-xs font-bold shadow hover:bg-yellow-700 transition">INPUT PERBAIKAN</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+                        <button onclick="app.shareStatus('print')" class="admin-only w-full bg-gray-800 text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-gray-900 transition flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-print"></i> CETAK STATUS</button>
+                        <button id="btnChecklistNow" class="admin-only w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition flex justify-center items-center gap-2 transform hover:-translate-y-0.5"><i class="fa-solid fa-clipboard-check"></i> ISI CEKLIS</button>
                     </div>
                 </div>
 
-                <div id="view-k3-form" class="view-section hidden fade-in max-w-3xl mx-auto">
-                    <button onclick="app.navigate('k3-menu')" class="mb-4 text-gray-500 font-bold text-sm flex items-center gap-2 hover:text-red-600"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-                    <div class="bg-white p-8 rounded-2xl shadow-lg border-t-8 border-red-600">
-                        <div class="text-center mb-8 border-b pb-4">
-                            <h2 class="text-xl font-black text-gray-800">LAPORAN PAK / KECELAKAAN KERJA PETUGAS</h2>
-                            <h3 class="text-sm font-bold text-gray-500">RSJ dr. H. MARZOEKI MAHDI BOGOR</h3>
-                        </div>
-
-                        <form onsubmit="app.submitK3(event)">
-                            <input type="hidden" id="k3Jenis">
+                <div id="view-checklist" class="view-section hidden fade-in max-w-2xl mx-auto">
+                    <button onclick="app.backToDetail()" class="mb-6 text-gray-400 hover:text-blue-600 font-bold text-sm flex items-center gap-2 transition"><div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></div> Batalkan</button>
+                    <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-blue-600">
+                        <h2 class="text-2xl font-black text-gray-800 mb-8 text-center uppercase tracking-tight hidden md:block">Form Ceklis Bulanan</h2>
+                        <form onsubmit="app.submitChecklist(event)">
+                            <input type="hidden" id="checkAparId">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                <div><label class="block text-gray-500 text-xs font-bold uppercase mb-2">Petugas</label><input type="text" id="inputPetugas" required class="w-full border-2 border-gray-100 rounded-xl px-4 py-3 bg-gray-50 font-bold text-gray-700" readonly></div>
+                                <div><label class="block text-gray-500 text-xs font-bold uppercase mb-2">Tanggal Cek</label><input type="date" id="inputCheckDate" required class="w-full border-2 border-blue-100 rounded-xl px-4 py-3 font-bold text-blue-800 focus:outline-none focus:border-blue-500 transition"></div>
+                            </div>
                             
-                            <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                                <h4 class="font-bold text-red-600 mb-4 border-b border-red-200 pb-1">I. DATA PEGAWAI</h4>
+                            <div class="bg-blue-50/50 p-6 rounded-2xl mb-8 border border-blue-100">
+                                <p class="text-xs font-black text-blue-500 uppercase mb-4 tracking-wider"><i class="fa-solid fa-list-check mr-1"></i> Item Pemeriksaan Fisik</p>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Nama</label><input type="text" id="k3KorbanNama" class="w-full border rounded-lg p-2 text-sm" required></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Unit Kerja / Ruangan</label><input type="text" id="k3KorbanJabatan" class="w-full border rounded-lg p-2 text-sm" required></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">NIP</label><input type="text" id="k3KorbanNIP" class="w-full border rounded-lg p-2 text-sm"></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Tempat, Tanggal Lahir</label><input type="text" id="k3TTL" class="w-full border rounded-lg p-2 text-sm"></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Jenis Kelamin</label><select id="k3Gender" class="w-full border rounded-lg p-2 text-sm"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Jabatan</label><select id="k3Jabatan" class="w-full border rounded-lg p-2 text-sm"><option>Dokter</option><option>Perawat</option><option>Nakes Lainnya</option><option>Non Nakes</option><option>PH / CS</option><option>Lainnya</option></select></div>
+                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">1. Nozzle / Corong</span></label>
+                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">2. Pin Pengaman</span></label>
+                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">3. Segel Utuh</span></label>
+                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">4. Selang (Hose)</span></label>
+                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">5. Tekanan Bagus</span></label>
+                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">6. Body Tabung</span></label>
+                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">7. Hanger / Dudukan</span></label>
+                                    <label class="flex items-center p-3 bg-white rounded-xl cursor-pointer border-2 border-transparent hover:border-blue-200 transition shadow-sm"><input type="checkbox" name="checkItem" class="w-5 h-5 accent-blue-600" onchange="app.updateLiveStatus()" checked><span class="ml-3 text-sm font-semibold text-gray-700">8. Isi Tidak Beku</span></label>
                                 </div>
                             </div>
 
-                            <div class="mb-6">
-                                <h4 class="font-bold text-red-600 mb-4 border-b border-red-200 pb-1">II. RINCIAN KEJADIAN</h4>
-                                
-                                <div class="grid grid-cols-2 gap-4 mb-4">
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">1. Tanggal Kejadian</label><input type="date" id="k3TglKejadian" class="w-full border rounded-lg p-2 text-sm" required></div>
-                                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Jam Kejadian</label><input type="time" id="k3JamKejadian" class="w-full border rounded-lg p-2 text-sm" required></div>
-                                </div>
-
-                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">2. Lokasi Kejadian</label><input type="text" id="k3Lokasi" class="w-full border rounded-lg p-2 text-sm" placeholder="Nama Ruangan / Tempat..." required></div>
-
-                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">3. Kronologis Kejadian</label><textarea id="k3Kronologi" class="w-full border rounded-lg p-2 text-sm h-24" placeholder="Ceritakan detail kejadian..." required></textarea></div>
-
-                                <div class="mb-4 p-3 border rounded-lg bg-gray-50">
-                                    <label class="block text-xs font-bold text-gray-500 mb-2">4. Jenis Kecelakaan Kerja</label>
-                                    <div class="grid grid-cols-1 gap-2 text-sm">
-                                        <label class="flex items-center"><input type="checkbox" name="k3JenisDetail" value="KNC" class="mr-2"> Kejadian Nyaris Cedera (KNC / Near miss)</label>
-                                        <label class="flex items-center"><input type="checkbox" name="k3JenisDetail" value="KTC" class="mr-2"> Kejadian Tidak Cedera (KTC / Non-Harm)</label>
-                                        <label class="flex items-center"><input type="checkbox" name="k3JenisDetail" value="KTD" class="mr-2"> Kejadian Tidak Diharapkan (KTD) / Sentinel</label>
-                                    </div>
-                                </div>
-
-                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">5. Orang Pertama yang Melihat</label><select id="k3Saksi" class="w-full border rounded-lg p-2 text-sm"><option>Karyawan</option><option>Pasien</option><option>Keluarga Pasien</option><option>Lain-lain</option></select></div>
-
-                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">6. Tempat Kejadian Spesifik</label><input type="text" id="k3TempatSpesifik" class="w-full border rounded-lg p-2 text-sm" placeholder="Contoh: Kamar Mandi, Tangga..."></div>
-
-                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">7. Unit/Departemen Penyebab</label><input type="text" id="k3UnitPenyebab" class="w-full border rounded-lg p-2 text-sm"></div>
-
-                                <div class="mb-4 p-3 border rounded-lg bg-gray-50">
-                                    <label class="block text-xs font-bold text-gray-500 mb-2">8. Akibat Kecelakaan</label>
-                                    <div class="grid grid-cols-2 gap-2 text-sm">
-                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Kematian" class="mr-2"> Kematian</label>
-                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Cedera Berat" class="mr-2"> Cedera Berat</label>
-                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Cedera Sedang" class="mr-2"> Cedera Sedang</label>
-                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Cedera Ringan" class="mr-2"> Cedera Ringan</label>
-                                        <label class="flex items-center"><input type="radio" name="k3Akibat" value="Tidak Ada Cedera" class="mr-2"> Tidak Ada Cedera</label>
-                                    </div>
-                                </div>
-
-                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">9. Tindakan yang Dilakukan</label><textarea id="k3Tindakan" class="w-full border rounded-lg p-2 text-sm h-16"></textarea></div>
-
-                                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">10. Tindakan Oleh</label><input type="text" id="k3TindakanOleh" class="w-full border rounded-lg p-2 text-sm"></div>
-                            </div>
-
-                            <div class="mb-6 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-                                <label class="block text-xs font-bold text-gray-800 mb-2 uppercase">Grading Risiko Kejadian (Diisi Pelapor)</label>
-                                <div class="grid grid-cols-4 gap-2 text-center">
-                                    <label class="cursor-pointer"><input type="radio" name="k3Grading" value="Biru" class="peer hidden"><div class="p-2 bg-white border rounded peer-checked:bg-blue-500 peer-checked:text-white transition">Biru</div></label>
-                                    <label class="cursor-pointer"><input type="radio" name="k3Grading" value="Hijau" class="peer hidden"><div class="p-2 bg-white border rounded peer-checked:bg-green-500 peer-checked:text-white transition">Hijau</div></label>
-                                    <label class="cursor-pointer"><input type="radio" name="k3Grading" value="Kuning" class="peer hidden"><div class="p-2 bg-white border rounded peer-checked:bg-yellow-500 peer-checked:text-white transition">Kuning</div></label>
-                                    <label class="cursor-pointer"><input type="radio" name="k3Grading" value="Merah" class="peer hidden"><div class="p-2 bg-white border rounded peer-checked:bg-red-500 peer-checked:text-white transition">Merah</div></label>
-                                </div>
-                            </div>
-
-                            <div class="mb-4 pt-2">
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Foto Bukti (Wajib)</label>
-                                <input type="file" id="k3Foto" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
-                            </div>
+                            <div id="liveStatusBox" class="mb-8 p-6 rounded-2xl border-2 text-center transition-all duration-300 transform scale-100"></div>
                             
-                            <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">Nama Pembuat Laporan</label><input type="text" id="k3Pelapor" class="w-full border rounded-lg p-2 text-sm" required></div>
-                            <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">No WhatsApp</label><input type="number" id="k3WA" class="w-full border rounded-lg p-2 text-sm" required></div>
-
-                            <div class="mb-6">
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Tanda Tangan Pelapor</label>
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg bg-gray-50"><canvas id="k3SigPad" class="sig-pad" height="150"></canvas></div>
-                                <button type="button" onclick="app.clearSig()" class="text-xs text-red-500 mt-1 underline">Hapus Tanda Tangan</button>
+                            <div id="evidenceContainer" class="hidden mb-8 bg-red-50 p-6 rounded-2xl border-2 border-dashed border-red-300 text-center">
+                                <div class="mb-3 text-red-400 text-3xl"><i class="fa-solid fa-camera"></i></div>
+                                <label class="block text-red-800 text-sm font-bold mb-2 uppercase tracking-wide">Wajib Foto Bukti Kerusakan</label>
+                                <input type="file" id="evidencePhoto" accept="image/*" capture="environment" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-white file:text-red-600 hover:file:bg-red-100 cursor-pointer">
                             </div>
 
-                            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">KIRIM LAPORAN</button>
+                            <div class="mb-8"><label class="block text-gray-500 text-xs font-bold uppercase mb-2">Catatan Tambahan</label><textarea id="inputNotes" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 h-28 text-sm resize-none transition" placeholder="Tulis keterangan jika ada kerusakan..."></textarea></div>
+                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-600 tracking-wide transition transform hover:-translate-y-1">SIMPAN HASIL INSPEKSI</button>
                         </form>
                     </div>
                 </div>
-
-                <div id="view-k3-admin" class="view-section hidden fade-in space-y-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-chart-pie mr-2 text-red-600"></i>Dashboard K3</h2>
-                        <div>
-                            <button onclick="app.printK3QR()" class="mr-2 bg-gray-800 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-black transition"><i class="fa-solid fa-qrcode mr-2"></i>QR Lapor</button>
-                            <button onclick="app.navigate('dashboard')" class="text-sm font-bold text-gray-500 hover:text-red-600">Kembali</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-4 gap-3">
-                        <div class="bg-white p-3 rounded-xl shadow border-b-4 border-gray-400 text-center"><div class="text-2xl font-black text-gray-700" id="k3StatTotal">0</div><div class="text-[10px] font-bold text-gray-400">TOTAL</div></div>
-                        <div class="bg-white p-3 rounded-xl shadow border-b-4 border-red-500 text-center"><div class="text-2xl font-black text-red-500" id="k3StatWait">0</div><div class="text-[10px] font-bold text-gray-400">MENUNGGU</div></div>
-                        <div class="bg-white p-3 rounded-xl shadow border-b-4 border-yellow-500 text-center"><div class="text-2xl font-black text-yellow-500" id="k3StatProc">0</div><div class="text-[10px] font-bold text-gray-400">DIPROSES</div></div>
-                        <div class="bg-white p-3 rounded-xl shadow border-b-4 border-green-500 text-center"><div class="text-2xl font-black text-green-500" id="k3StatDone">0</div><div class="text-[10px] font-bold text-gray-400">SELESAI</div></div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
-                            <h3 class="font-bold text-sm text-gray-700">Data Masuk</h3>
-                            <button onclick="app.fetchK3Data(true)" class="text-blue-600 text-xs font-bold"><i class="fa-solid fa-rotate"></i> Refresh</button>
-                        </div>
-                        <div id="k3ListContainer" class="divide-y divide-gray-100 max-h-[500px] overflow-y-auto p-4 space-y-4"></div>
-                    </div>
-                </div>
-
-                <div id="pdf-container-k3" class="hidden bg-white text-black p-10" style="font-family: Arial; font-size: 12px; width: 800px;">
-                    <div id="pdf-content-area"></div>
-                </div>
-
             </main>
         </div>
     </div>
 
-    <div id="k3QrPrintArea" class="hidden bg-white flex-col justify-center items-center h-full text-center">
-        <h1 class="text-4xl font-black mb-4">LAPOR INSIDEN K3</h1>
-        <p class="text-xl mb-8">Scan untuk Melaporkan Tumpahan B3 / Kecelakaan Kerja</p>
-        <div id="k3QrCodeTarget" class="mb-8"></div>
-        <p class="text-sm font-bold">Instalasi K3RS RSJMM Bogor</p>
-    </div>
-
-    <div id="exportModal" class="modal hidden">
-        <div class="bg-white p-6 rounded-xl w-96 shadow-2xl border-t-8 border-green-600">
-            <h3 class="font-bold text-xl mb-6 text-gray-800 flex items-center gap-2"><i class="fa-solid fa-file-excel text-green-600"></i> Export Laporan Bulanan</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Bulan</label>
-                    <select id="exportMonth" class="w-full border-2 border-gray-200 rounded-lg p-3 font-bold text-gray-700 focus:border-green-500 focus:outline-none"></select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Tahun</label>
-                    <select id="exportYear" class="w-full border-2 border-gray-200 rounded-lg p-3 font-bold text-gray-700 focus:border-green-500 focus:outline-none"></select>
-                </div>
-            </div>
-            <div class="flex justify-end gap-3 mt-8">
-                <button onclick="document.getElementById('exportModal').classList.add('hidden')" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-bold text-gray-600 transition">Batal</button>
-                <button onclick="app.processExport()" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-bold shadow-lg transition flex items-center gap-2"><i class="fa-solid fa-download"></i> Download Excel</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="successModal" class="fixed inset-0 z-[160] hidden flex items-center justify-center bg-black/70 backdrop-blur-sm fade-in">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center relative overflow-hidden transform scale-100 transition-all">
-            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500 animate-bounce">
-                <i class="fa-solid fa-check text-5xl"></i>
-            </div>
-            <h3 class="text-2xl font-black text-gray-800 mb-2">Laporan Terkirim!</h3>
-            <p class="text-gray-500 text-sm mb-6">Terima kasih atas laporannya.</p>
-            
-            <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200 relative">
-                <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">ID Tiket Anda</div>
-                <div class="text-3xl font-mono font-black text-gray-800" id="successTicketId">...</div>
-                <button onclick="app.copyTicket()" class="absolute top-2 right-2 text-gray-400 hover:text-green-600"><i class="fa-regular fa-copy"></i></button>
-            </div>
-
-            <button onclick="app.closeSuccessModal()" class="w-full py-3.5 rounded-xl bg-green-600 text-white font-bold shadow-lg hover:bg-green-700 transition transform hover:-translate-y-0.5">Tutup</button>
-        </div>
-    </div>
-
-    <div id="logoutModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm fade-in">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 to-pink-600"></div>
-            <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500 animate-pulse">
-                <i class="fa-solid fa-power-off text-3xl"></i>
-            </div>
-            <h3 class="text-xl font-black text-gray-800 mb-2">Konfirmasi Logout</h3>
-            <p class="text-sm text-gray-500 mb-8 font-medium">Apakah anda yakin ingin mengakhiri sesi ini?</p>
-            <div class="flex gap-3">
-                <button onclick="document.getElementById('logoutModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl border-2 border-gray-100 font-bold text-gray-500 hover:bg-gray-50 transition">Batal</button>
-                <button onclick="app.finalizeLogout()" class="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 hover:shadow-xl transition transform hover:-translate-y-0.5">Ya, Keluar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="deleteModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm fade-in">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 to-orange-500"></div>
-            <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500 animate-pulse">
-                <i class="fa-solid fa-trash-can text-3xl"></i>
-            </div>
-            <h3 class="text-xl font-black text-gray-800 mb-2">Hapus Data APAR?</h3>
-            <p class="text-sm text-gray-500 mb-8 font-medium">Data yang dihapus tidak dapat dikembalikan lagi. Anda yakin?</p>
-            <div class="flex gap-3">
-                <button onclick="document.getElementById('deleteModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl border-2 border-gray-100 font-bold text-gray-500 hover:bg-gray-50 transition">Batal</button>
-                <button onclick="app.confirmDelete()" class="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 hover:shadow-xl transition transform hover:-translate-y-0.5">Ya, Hapus</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="editHistoryModal" class="modal hidden"><div class="bg-white p-6 rounded-lg w-96 shadow-xl"><h3 class="font-bold text-lg mb-4">Edit Catatan Riwayat</h3><input type="hidden" id="editHistoryIndex"><div class="mb-3"><label class="block text-xs font-bold mb-1">Status</label><select id="editHistoryStatus" class="w-full border p-2 rounded"><option value="true">BAIK</option><option value="false">RUSAK</option></select></div><div class="mb-4"><label class="block text-xs font-bold mb-1">Catatan</label><textarea id="editHistoryNote" class="w-full border p-2 rounded h-20"></textarea></div><div class="flex justify-end gap-2"><button onclick="document.getElementById('editHistoryModal').classList.add('hidden')" class="px-3 py-1 bg-gray-200 rounded text-sm">Batal</button><button onclick="app.saveEditedHistory()" class="px-3 py-1 bg-blue-600 text-white rounded text-sm font-bold">Update</button></div></div></div>
-    <div id="moveAparModal" class="modal hidden"><div class="bg-white p-6 rounded-lg w-96 shadow-xl border-t-4 border-orange-500"><h3 class="font-bold text-lg mb-4 text-orange-600"><i class="fa-solid fa-truck-fast"></i> Pindahkan APAR</h3><div class="mb-3"><label class="block text-xs font-bold mb-1 text-gray-500">Lokasi Sekarang:</label><div id="moveCurrentLoc" class="font-bold text-sm bg-gray-100 p-2 rounded text-gray-700"></div></div><div class="mb-4"><label class="block text-xs font-bold mb-1">Pindah ke Ruangan Baru:</label><input type="text" id="moveNewLoc" class="w-full border p-2 rounded font-bold" placeholder="Nama Ruangan Baru..."></div><div class="mb-4"><label class="block text-xs font-bold mb-1">Petugas:</label><input type="text" id="movePetugas" class="w-full border p-2 rounded" placeholder="Nama Anda"></div><div class="flex justify-end gap-2"><button onclick="document.getElementById('moveAparModal').classList.add('hidden')" class="px-3 py-1 bg-gray-200 rounded text-sm">Batal</button><button onclick="app.submitMove()" class="px-3 py-1 bg-orange-600 text-white rounded text-sm font-bold shadow">Simpan & Pindahkan</button></div></div></div>
-    <div id="tindakLanjutModal" class="modal hidden"><div class="bg-white p-6 rounded-lg w-96 shadow-xl border-t-4 border-yellow-500"><h3 class="font-bold text-lg mb-4 text-yellow-700"><i class="fa-solid fa-wrench"></i> Tindak Lanjut Perbaikan</h3><div class="mb-4"><label class="block text-xs font-bold mb-1">Tindakan yang dilakukan:</label><textarea id="tlNote" class="w-full border p-2 rounded h-24" placeholder="Cth: APAR dibawa ke workshop untuk isi ulang/perbaikan seal..."></textarea></div><div class="mb-4"><label class="block text-xs font-bold mb-1">Oleh:</label><input type="text" id="tlPetugas" class="w-full border p-2 rounded" placeholder="Nama Teknisi"></div><div class="flex justify-end gap-2"><button onclick="document.getElementById('tindakLanjutModal').classList.add('hidden')" class="px-3 py-1 bg-gray-200 rounded text-sm">Batal</button><button onclick="app.submitTindakLanjut()" class="px-3 py-1 bg-green-600 text-white rounded text-sm font-bold">Simpan & Ubah Jadi Baik</button></div></div></div>
-    <div id="labelPrintArea" class="hidden bg-white p-4 border border-gray-800 w-[300px] text-center mx-auto"><h2 class="text-lg font-bold uppercase mb-1 border-b border-black pb-1">KARTU INSPEKSI APAR</h2><h3 class="text-xs mb-2">RSJMM BOGOR</h3><div id="printQrContainer" class="flex justify-center my-2"></div><div class="text-xl font-black my-1" id="printLabelKode"></div><div class="text-sm italic" id="printLabelLokasi"></div><div class="text-[10px] mt-2 border-t pt-1">Scan untuk update status & cek riwayat</div></div><div id="printAllArea" class="hidden"></div>
-
     <script>
-        // ⚠️ API 1: APAR
-        const API_URL = "https://script.google.com/macros/s/AKfycbz4ynjoTOYduGB0_o-z64dEDTzLquxesQWGzafyZEZQDtKc3ea_5D9BzBHoJuT4X6IazA/exec";
-        
-        // ⚠️ API 2: K3 (Safety First)
-        const API_K3 = "https://script.google.com/macros/s/AKfycbyimfXBor2cf9omlSWMu-sFGOXo4gOeBEtJc5HGajVXCPNS6j1qbIKPFIqpNzP9kMUW/exec"; 
-        
+        const API_URL = "https://script.google.com/macros/s/AKfycbz4ynjoTOYduGB0_o-z64dEDTzLquxesQWGzafyZEZQDtKc3ea_5D9BzBHoJuT4X6IazA/exec"; 
         const app = {
-            data: { apars: [], checks: [], movements: [], dismissed: JSON.parse(localStorage.getItem('dismissed')) || [], months: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"], fullMonths: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"], currentPage: 1, itemsPerPage: 10, currentDetailId: null, historyToEdit: null, pendingScanAction: null, pendingScanId: null, deleteTargetId: null, k3Data: [], sigPad: null },
-            
-            formatPhotoUrl: function(url) { if (!url) return ''; const driveRegex = /\/d\/([a-zA-Z0-9_-]+)/; const match = url.match(driveRegex); if (match && match[1]) { return `https://drive.google.com/uc?export=view&id=${match[1]}`; } return url; },
-
-            toggleSidebar: function() {
-                const s = document.getElementById('sidebar');
-                const m = document.getElementById('main-content');
-                const hBtn = document.getElementById('headerToggleBtn');
-                const isClosed = s.classList.contains('hidden');
-                if (isClosed) {
-                    s.classList.remove('hidden'); s.classList.add('flex'); s.classList.add('md:flex');
-                    m.classList.add('md:ml-64'); hBtn.classList.add('hidden');
-                } else {
-                    s.classList.add('hidden'); s.classList.remove('flex'); s.classList.remove('md:flex');
-                    m.classList.remove('md:ml-64'); hBtn.classList.remove('hidden');
-                }
-            },
-
-            handleLogin: async function(e) { 
-                e.preventDefault(); const u = document.getElementById('loginUser').value; const p = document.getElementById('loginPass').value; this.toggleLoading(true, "Memeriksa Database...");
-                try { const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: u, password: p }) }); const j = await r.json();
-                    if (j.status === 'success') { localStorage.setItem('isLoggedIn', 'true'); localStorage.setItem('userRole', j.role); localStorage.setItem('petugasName', j.petugasName); localStorage.setItem('petugasId', u); 
-                        if(j.photoUrl) localStorage.setItem('petugasPhoto', this.formatPhotoUrl(j.photoUrl)); else localStorage.removeItem('petugasPhoto'); 
-                        if(j.petugasName) document.getElementById('inputPetugas').value = j.petugasName; document.getElementById('login-screen').classList.add('hidden');
-                        if (this.data.pendingScanAction === 'inspect' && this.data.pendingScanId) { if (this.data.apars.length === 0) { await this.fetchDataWithTimeout(); } this.data.pendingScanAction = null; document.getElementById('main-app').classList.remove('hidden'); this.showChecklistForm(this.data.pendingScanId); } else { this.init(); }
-                    } else { alert(j.message || 'Login Gagal!'); }
-                } catch (err) { console.error(err); alert('Gagal terhubung ke server.'); } finally { this.toggleLoading(false); }
-            },
-            cancelLogin: function() { document.getElementById('login-screen').classList.add('hidden'); const scanId = new URLSearchParams(window.location.search).get('id'); if (scanId) { document.getElementById('scan-choice-screen').classList.remove('hidden'); } else { document.getElementById('login-screen').classList.remove('hidden'); } },
-            
-            // REVISI: Logika Logout dengan Modal Baru
-            handleLogout: function() { 
-                document.getElementById('logoutModal').classList.remove('hidden');
-            },
-            finalizeLogout: function() {
-                localStorage.removeItem('isLoggedIn'); 
-                localStorage.removeItem('userRole'); 
-                localStorage.removeItem('petugasName'); 
-                localStorage.removeItem('petugasId'); 
-                localStorage.removeItem('petugasPhoto'); 
-                location.reload();
-            },
+            data: { apars: [], checks: [], movements: [], months: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"], fullMonths: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"], currentPage: 1, itemsPerPage: 10, currentDetailId: null },
             
             init: async function() {
                 const urlParams = new URLSearchParams(window.location.search); 
                 const scanId = urlParams.get('id');
-                const k3Mode = urlParams.get('k3'); // Deteksi Parameter K3
-
-                // JIKA SCAN QR K3 (Mode Laporan)
-                if (k3Mode === 'lapor') {
-                    document.getElementById('scan-choice-screen').classList.add('hidden');
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.body.classList.add('scan-mode'); // Hide sidebar
+                if (scanId) { 
+                    document.body.classList.add('scan-mode');
                     document.getElementById('main-app').classList.remove('hidden');
-                    this.navigate('k3-menu');
-                    return;
+                    this.toggleLoading(true, "Mengambil Data...");
+                    await this.fetchDataWithTimeout();
+                    this.toggleLoading(false);
+                    this.showDetail(scanId);
+                    return; 
                 }
-
-                const localApars = localStorage.getItem('cached_apars'); const localChecks = localStorage.getItem('cached_checks');
-                if (localApars) { try { this.data.apars = JSON.parse(localApars); this.data.checks = JSON.parse(localChecks || "[]"); } catch(e) {} }
-                if (scanId) { document.getElementById('scan-choice-screen').classList.remove('hidden'); this.fetchDataWithTimeout(); return; }
                 if (!localStorage.getItem('isLoggedIn')) { document.getElementById('login-screen').classList.remove('hidden'); return; }
-                document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden');
-                
-                const userName = localStorage.getItem('petugasName') || 'User'; document.getElementById('headerUserName').innerText = userName;
-                const photoUrl = localStorage.getItem('petugasPhoto'); const defaultUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=ffffff&color=2563eb`;
-                const finalUrl = (photoUrl && photoUrl.trim() !== "") ? photoUrl : defaultUrl; document.getElementById('headerProfileImg').src = finalUrl; document.getElementById('profilePageImg').src = finalUrl;
-                
-                const now = new Date(); const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu']; const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-                document.getElementById('headerDate').innerHTML = `<i class="fa-regular fa-calendar mr-1"></i> ${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-                setInterval(() => { document.getElementById('clockDisplay').innerHTML = `<i class="fa-regular fa-clock mr-1"></i> ` + new Date().toLocaleTimeString('id-ID'); }, 1000);
-                
-                this.updateSyncButton(); window.addEventListener('online', () => this.updateSyncButton()); window.addEventListener('offline', () => this.updateSyncButton());
-                const savedPetugas = localStorage.getItem('petugasName'); if(savedPetugas) document.getElementById('inputPetugas').value = savedPetugas;
-                this.setupFilters(); this.renderDashboard(); this.fetchDataWithTimeout();
-            },
-
-            handleScanOption: function(choice) {
-                const scanId = new URLSearchParams(window.location.search).get('id'); document.getElementById('scan-choice-screen').classList.add('hidden'); document.body.classList.add('scan-mode');
-                if (choice === 'inspect') { if (localStorage.getItem('isLoggedIn')) { document.getElementById('main-app').classList.remove('hidden'); this.showChecklistForm(scanId); } else { this.data.pendingScanAction = 'inspect'; this.data.pendingScanId = scanId; document.getElementById('login-screen').classList.remove('hidden'); } } 
-                else if (choice === 'history') { document.body.classList.add('public-mode'); document.getElementById('main-app').classList.remove('hidden'); if(this.data.apars.length > 0) { this.showDetail(scanId); } else { this.toggleLoading(true, "Memuat Data..."); this.fetchDataWithTimeout().then(() => { this.toggleLoading(false); this.showDetail(scanId); }); } }
+                document.getElementById('main-app').classList.remove('hidden');
+                this.fetchDataWithTimeout();
+                this.setupFilters();
             },
 
             fetchDataWithTimeout: async function() {
-                try { const r = await fetch(API_URL + "?action=getData"); const j = await r.json(); this.data.apars = j.apars || []; this.data.checks = j.checks || []; this.data.movements = j.movements || []; localStorage.setItem('cached_apars', JSON.stringify(this.data.apars)); localStorage.setItem('cached_checks', JSON.stringify(this.data.checks)); this.renderDashboard(); document.getElementById('statusOnlineBadge').innerText = "ONLINE"; document.getElementById('statusOnlineBadge').className = "text-[10px] font-normal bg-green-500 text-white px-1 py-0.5 rounded align-top"; this.checkNotifications(); } catch (err) { console.error("Fetch Error:", err); document.getElementById('statusOnlineBadge').innerText = "OFFLINE"; document.getElementById('statusOnlineBadge').className = "text-[10px] font-normal bg-gray-500 text-white px-1 py-0.5 rounded align-top"; }
-            },
-            sendData: async function(p) {
-                if (!navigator.onLine) { this.saveToOfflineQueue(p); this.showToast("Tidak ada sinyal. Disimpan Offline.", "orange"); this.updateSyncButton(); return true; }
-                this.toggleLoading(true, "Menyimpan..."); try { const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(p) }); const j = await r.json(); if(j.status === 'success') { await this.fetchDataWithTimeout(); this.toggleLoading(false); this.showToast("Berhasil Disimpan!", "green"); return true; } else { throw new Error(j.message); } } catch (err) { this.toggleLoading(false); this.saveToOfflineQueue(p); this.showToast("Gagal kirim. Masuk antrean.", "orange"); this.updateSyncButton(); return true; }
-            },
-            saveToOfflineQueue: function(p) { const q = JSON.parse(localStorage.getItem('offlineQueue') || "[]"); q.push(p); localStorage.setItem('offlineQueue', JSON.stringify(q)); },
-            updateSyncButton: function() { const q = JSON.parse(localStorage.getItem('offlineQueue') || "[]"); const b = document.getElementById('btnSync'); const c = document.getElementById('syncCount'); if (q.length > 0 && navigator.onLine) { b.classList.remove('hidden'); c.innerText = q.length; } else { b.classList.add('hidden'); } },
-            syncOfflineData: async function() { const q = JSON.parse(localStorage.getItem('offlineQueue') || "[]"); if (q.length === 0) return; if(!confirm(`Ada ${q.length} data offline. Kirim?`)) return; this.toggleLoading(true, "Sync..."); let sc = 0; const nq = []; for (let i = 0; i < q.length; i++) { try { const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(q[i]) }); const j = await r.json(); if(j.status === 'success') { sc++; } else { nq.push(q[i]); } } catch (e) { nq.push(q[i]); } } localStorage.setItem('offlineQueue', JSON.stringify(nq)); await this.fetchDataWithTimeout(); this.updateSyncButton(); this.toggleLoading(false); alert(`${sc} Terkirim. Sisa: ${nq.length}`); },
-            resetDatabase: async function() { if(localStorage.getItem('userRole') !== 'Admin') { alert('Hanya ADMIN!'); return; } const p = prompt("Password ADMIN:"); if (p === "admin123") { if(confirm("YAKIN HAPUS SEMUA?")) { const s = await this.sendData({ action: "resetDatabase" }); if(s) { localStorage.removeItem('cached_apars'); localStorage.removeItem('cached_checks'); localStorage.removeItem('dismissed'); alert("Reset Berhasil."); location.reload(); } } } else if (p!==null) { alert("Password Salah!"); } },
-
-            changePage: function(d) { this.data.currentPage += d; this.renderDashboard(); },
-            renderDashboard: function() {
-                const tb = document.getElementById('aparTableBody'); const em = document.getElementById('emptyState'); tb.innerHTML = '';
-                const yEl = document.getElementById('yearFilter'); const mEl = document.getElementById('monthFilter');
-                const sYear = yEl && yEl.value ? yEl.value : new Date().getFullYear(); const sMonth = mEl ? mEl.value : ""; 
-                const search = document.getElementById('searchInput').value.toLowerCase();
-                
-                if (!this.data.apars || this.data.apars.length === 0) { em.classList.remove('hidden'); document.getElementById('paginationInfo').innerText = ""; return; } else { em.classList.add('hidden'); }
-
-                let fApars = this.data.apars.filter(a => {
-                    let lastCheck;
-                    if(sMonth !== "") { lastCheck = this.data.checks.find(c => String(c.aparId) === String(a.id) && String(c.year) === String(sYear) && String(c.month) === String(sMonth)); } 
-                    else { lastCheck = this.getLastCheck(a.id); }
-                    const isExpired = new Date(a.expiredDate) < new Date();
-                    let st = "belum dicek"; 
-                    if (lastCheck) { st = String(lastCheck.isGood)==='true' ? "baik" : "rusak"; }
-                    const d1 = a.refillDate ? new Date(a.refillDate).toLocaleDateString('id-ID') : ""; const d2 = new Date(a.expiredDate).toLocaleDateString('id-ID');
-                    const comb = `${a.kode} ${a.lokasi} ${a.jenis} ${a.berat} ${d1} ${d2} ${st}`.toLowerCase();
-                    return comb.includes(search);
-                });
-                
-                let sTotal=fApars.length, sChecked=0, sGood=0, sBad=0, cPow=0, cCo2=0, cFoam=0, cClean=0;
-                fApars.forEach(a => {
-                    const j = (a.jenis || '').toLowerCase(); if(j.includes('powder')) cPow++; else if(j.includes('co2')) cCo2++; else if(j.includes('foam')) cFoam++; else cClean++;
-                    let tC;
-                    if(sMonth !== "") { tC = this.data.checks.find(c => String(c.aparId) === String(a.id) && String(c.year) === String(sYear) && String(c.month) === String(sMonth)); if(tC) sChecked++; } 
-                    else { const curC = this.data.checks.find(c => String(c.aparId) === String(a.id) && c.year == new Date().getFullYear() && c.month == new Date().getMonth()); if(curC) sChecked++; tC = this.getLastCheck(a.id); }
-                    if(tC) { String(tC.isGood)==='true' ? sGood++ : sBad++; }
-                });
-
-                document.getElementById('statTotal').innerText = sTotal; document.getElementById('statChecked').innerText = sChecked; document.getElementById('statGood').innerText = sGood; document.getElementById('statBad').innerText = sBad;
-                document.getElementById('countPowder').innerText = cPow; document.getElementById('countCo2').innerText = cCo2; document.getElementById('countFoam').innerText = cFoam; document.getElementById('countClean').innerText = cClean;
-                this.renderDashboardMovements();
-
-                const tP = Math.ceil(fApars.length / this.data.itemsPerPage);
-                if (this.data.currentPage < 1) this.data.currentPage = 1; if (this.data.currentPage > tP) this.data.currentPage = tP || 1;
-                
-                const start = (this.data.currentPage - 1) * this.data.itemsPerPage; const end = start + this.data.itemsPerPage; const pItems = fApars.slice(start, end);
-                document.getElementById('paginationInfo').innerText = `Menampilkan ${start + 1} - ${Math.min(end, fApars.length)} dari ${fApars.length} data`;
-                document.getElementById('btnPrev').disabled = this.data.currentPage === 1; document.getElementById('btnNext').disabled = this.data.currentPage === tP;
-
-                pItems.forEach(a => {
-                    let lC;
-                    if (sMonth !== "") lC = this.data.checks.find(c => String(c.aparId) === String(a.id) && String(c.year) === String(sYear) && String(c.month) === String(sMonth)); else lC = this.getLastCheck(a.id);
-                    const isExp = new Date(a.expiredDate) < new Date(); 
-                    let bg = '<span class="bg-gray-100 text-gray-400 py-1 px-2 rounded-full text-[10px] font-bold">BELUM</span>';
-                    
-                    if (isExp) { bg = `<span class="bg-red-100 text-red-700 py-1 px-2 rounded-full text-[10px] font-bold border border-red-200">EXPIRED</span>`; } 
-                    
-                    if (lC) { 
-                        const isG = String(lC.isGood).toLowerCase() === 'true'; const mN = this.data.months[lC.month];
-                        if (isG) { bg = `<span class="bg-green-100 text-green-700 py-1 px-2 rounded-full text-[10px] font-bold border border-green-200">BAIK (${mN})</span>`; } 
-                        else { if (lC.notes && lC.notes.includes('HARUS DIISI ULANG')) { bg = `<span class="bg-purple-100 text-purple-700 py-1 px-2 rounded-full text-[10px] font-bold border border-purple-200">APAR HARUS DIISI ULANG (${mN})</span>`; } else { bg = `<span class="bg-red-100 text-red-700 py-1 px-2 rounded-full text-[10px] font-bold border border-red-200">RUSAK (${mN})</span>`; } }
-                    }
-                    const eD = `<span class="${isExp?'text-red-600 font-bold bg-red-50 px-1 rounded':''}">${new Date(a.expiredDate).toLocaleDateString('id-ID')}</span>`;
-                    const rD = a.refillDate ? new Date(a.refillDate).toLocaleDateString('id-ID') : "-";
-                    let b = parseFloat(String(a.berat).replace(',', '.')); if(isNaN(b)) b=0; 
-                    
-                    tb.innerHTML += `<tr class="border-b border-gray-50 hover:bg-gray-50 transition">
-                        <td class="py-4 px-4 font-bold text-gray-700 text-xs">${a.kode}</td>
-                        <td class="py-4 px-4 text-xs text-gray-600">${a.lokasi}</td>
-                        <td class="py-4 px-4 text-center text-xs"><b>${a.jenis}</b><br><span class="text-gray-400">${b} kg</span></td>
-                        <td class="py-4 px-4 text-center text-xs text-gray-500">${rD}</td>
-                        <td class="py-4 px-4 text-center text-xs">${eD}</td>
-                        <td class="py-4 px-4 text-center">${bg}</td>
-                        <td class="py-4 px-4 text-center flex justify-center gap-2 admin-only">
-                            <button onclick="app.showChecklistForm('${String(a.id)}')" class="bg-blue-50 text-blue-600 p-2 rounded-lg hover:bg-blue-100 transition shadow-sm" title="Ceklis"><i class="fa-solid fa-check"></i></button>
-                            <button onclick="app.showDetail('${String(a.id)}')" class="bg-gray-50 text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition shadow-sm" title="Detail"><i class="fa-solid fa-eye"></i></button>
-                            <button onclick="app.printLabel('${String(a.id)}')" class="bg-gray-50 text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition shadow-sm" title="QR Code"><i class="fa-solid fa-qrcode"></i></button>
-                            <button onclick="app.deleteApar('${String(a.id)}')" class="bg-red-50 text-red-600 p-2 rounded-lg hover:bg-red-100 transition shadow-sm" title="Hapus"><i class="fa-solid fa-trash"></i></button>
-                        </td></tr>`;
-                });
-            },
-            renderDashboardMovements: function() { const c = document.getElementById('dashboardMovements'); c.innerHTML = ''; const m = [...this.data.movements].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5); if(m.length === 0) { c.innerHTML = '<div class="text-xs text-gray-400 italic text-center p-2">Belum ada riwayat perpindahan.</div>'; return; } m.forEach(x => { const a = this.data.apars.find(z => String(z.id) == String(x.aparId)); const k = a ? a.kode : 'APAR Terhapus'; c.innerHTML += `<div class="flex items-center gap-3 text-xs border-b border-gray-100 pb-2 p-1 hover:bg-orange-50 rounded"><div class="bg-orange-100 text-orange-600 p-1.5 rounded-full"><i class="fa-solid fa-arrow-right-arrow-left"></i></div><div class="flex-1"><div class="flex justify-between"><span class="font-bold text-gray-700">${k}</span><span class="text-[10px] text-gray-400">${new Date(x.timestamp).toLocaleDateString('id-ID')}</span></div><div class="flex items-center gap-1 mt-0.5"><span class="line-through text-red-400">${x.oldLocation}</span><i class="fa-solid fa-arrow-right text-[8px] text-gray-400"></i><span class="font-bold text-green-600">${x.newLocation}</span></div></div></div>`; }); },
-            toggleNotifications: function(e) { e.stopPropagation(); document.getElementById('notifDropdown').classList.toggle('hidden'); },
-            closeDropdown: function(e) { if (!document.getElementById('notifDropdown').contains(e.target) && !document.getElementById('btnNotif').contains(e.target)) { document.getElementById('notifDropdown').classList.add('hidden'); } },
-            checkNotifications: function() { 
-                const b = document.getElementById('notifBadge'); const l = document.getElementById('notifList'); if (!b || !l) return;
-                l.innerHTML = ''; let c = 0; const t = new Date(); this.data.apars.forEach(a => { const e = new Date(a.expiredDate); const d = Math.ceil((e - t) / (1000 * 60 * 60 * 24)); if (d < 0 && !this.isDismissed('exp', a.id)) { c++; this.addNotifItem(l, 'bg-red-50 border-red-200', 'text-red-700', 'KADALUARSA', `APAR ${a.kode} sudah lewat tanggal kadaluarsa!`, a.id, 'exp'); } else if (d < 30 && d >= 0 && !this.isDismissed('expwarn', a.id)) { c++; this.addNotifItem(l, 'bg-yellow-50 border-yellow-200', 'text-yellow-700', 'AKAN KADALUARSA', `APAR ${a.kode} expired dalam ${d} hari.`, a.id, 'expwarn'); } const lc = this.getLastCheck(a.id); if (lc && String(lc.isGood) === 'false' && !this.isDismissed('dmg', a.id)) { c++; this.addNotifItem(l, 'bg-orange-50 border-orange-200', 'text-orange-700', 'KONDISI RUSAK', `APAR ${a.kode} dilaporkan RUSAK. Butuh perbaikan.`, a.id, 'dmg'); } const cm = this.data.checks.some(k => String(k.aparId) == String(a.id) && k.month == t.getMonth() && k.year == t.getFullYear()); if (!cm && t.getDate() > 20 && !this.isDismissed('uncheck', a.id)) { c++; this.addNotifItem(l, 'bg-blue-50 border-blue-200', 'text-blue-700', 'BELUM DICEK', `APAR ${a.kode} belum dicek bulan ini.`, a.id, 'uncheck'); } }); if (c > 0) { b.classList.remove('hidden'); b.innerText = c; } else { b.classList.add('hidden'); l.innerHTML = '<div class="p-8 text-center text-sm text-gray-400 italic">Semua Aman!</div>'; } },
-            addNotifItem: function(c, b, t, ti, m, i, ty) { c.innerHTML += `<div class="px-4 py-3 border-b ${b} flex justify-between items-start"><div><div class="text-[10px] font-bold ${t} uppercase mb-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>${ti}</div><div class="text-xs font-semibold text-gray-700">${m}</div></div><button onclick="app.dismissNotif('${ty}', '${i}')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button></div>`; },
-            dismissNotif: function(t, i) { this.data.dismissed.push(t + '_' + i); localStorage.setItem('dismissed', JSON.stringify(this.data.dismissed)); this.checkNotifications(); },
-            isDismissed: function(t, i) { return this.data.dismissed.includes(t + '_' + i); },
-            toggleLoading: function(s, t) { const o = document.getElementById('loadingOverlay'); if(s) { o.style.display = 'flex'; if(t) document.getElementById('loadingText').innerText = t; } else { o.style.display = 'none'; } },
-            showToast: function(m, c) { let t = document.getElementById('toast-msg'); if(!t) { t=document.createElement('div'); t.id='toast-msg'; document.body.appendChild(t); } t.className = `fixed bottom-4 right-4 px-4 py-2 rounded bg-${c}-600 text-white text-sm shadow-lg z-50 fade-in`; t.innerText = m; t.style.display='block'; setTimeout(()=>t.style.display='none', 3000); },
-            
-            navigate: function(id) { 
-                if(id==='dashboard') { document.getElementById('editAparId').value = ""; document.getElementById('formTitle').innerText="Tambah APAR Baru"; document.getElementById('btnSaveApar').innerText="Simpan Data"; document.getElementById('pageTitle').innerText = "BERANDA"; }
-                else if(id==='profile') { document.getElementById('pageTitle').innerText = "PROFIL USER"; this.renderProfile(); }
-                else if(id==='settings') { document.getElementById('pageTitle').innerText = "PENGATURAN"; }
-                
-                // === NAVIGASI K3 ===
-                if(id.startsWith('k3')) {
-                    document.getElementById('pageTitle').innerText = "SAFETY K3";
-                    if(id === 'k3-admin') this.fetchK3Data(false); // Silent Load
-                }
-                // ===================
-
-                const header = document.getElementById('top-header'); const isMobile = window.innerWidth < 768;
-                if (document.body.classList.contains('scan-mode') && isMobile && (id === 'detail' || id === 'checklist')) { header.classList.add('hidden'); } else { if (!document.body.classList.contains('scan-mode')) { header.classList.remove('hidden'); } }
-                document.querySelectorAll('.view-section').forEach(e=>e.classList.add('hidden')); document.getElementById(`view-${id}`).classList.remove('hidden'); 
-                document.querySelectorAll('aside button').forEach(b => { b.classList.remove('active-nav'); b.classList.add('inactive-nav'); });
-                const activeBtn = document.getElementById(`nav-${id}`); if(activeBtn) { activeBtn.classList.remove('inactive-nav'); activeBtn.classList.add('active-nav'); }
-                if(id==='dashboard') this.renderDashboard(); 
+                try { const r = await fetch(API_URL + "?action=getData"); const j = await r.json(); this.data.apars = j.apars || []; this.data.checks = j.checks || []; this.renderDashboard(); } catch (err) { console.error(err); }
             },
 
-            renderProfile: function() {
-                const user = localStorage.getItem('petugasName') || '-'; const role = localStorage.getItem('userRole') || '-'; const id = localStorage.getItem('petugasId') || 'User';
-                document.getElementById('profilePageName').innerText = user; document.getElementById('profilePageRole').innerText = role; document.getElementById('profilePageId').innerText = id; document.getElementById('profilePageEmail').innerText = id.toLowerCase().replace(' ', '') + '@gmail.com';
+            navigate: function(id) {
+                document.querySelectorAll('.view-section').forEach(e=>e.classList.add('hidden')); 
+                document.getElementById(`view-${id}`).classList.remove('hidden'); 
             },
 
-            updateAccount: async function(e) {
-                e.preventDefault(); const oldPass = document.getElementById('setOldPass').value; const newUser = document.getElementById('setNewUser').value; const newPass = document.getElementById('setNewPass').value; const currentId = localStorage.getItem('petugasId');
-                if (!oldPass) return alert("Masukkan password lama untuk konfirmasi!"); if (!newUser && !newPass) return alert("Tidak ada perubahan yang diisi.");
-                this.toggleLoading(true, "Mengupdate Akun..."); const payload = { action: "changeAccount", oldUser: currentId, oldPass: oldPass, newUser: newUser || currentId, newPass: newPass || oldPass }; const s = await this.sendData(payload); this.toggleLoading(false);
-                if (s) { alert("Akun berhasil diupdate! Silakan login ulang."); this.handleLogout(); } else { alert("Gagal update akun. Cek password lama Anda."); }
-            },
-
-            setupFilters: function() { const y = document.getElementById('yearFilter'); const m = document.getElementById('monthFilter'); if(!y) return; [2025,2026,2027,2028,2029].forEach(yr => y.innerHTML += `<option value="${yr}" ${yr===new Date().getFullYear()?'selected':''}>${yr}</option>`); m.innerHTML = '<option value="">Semua Bulan</option>'; this.data.fullMonths.forEach((mn, i) => m.innerHTML += `<option value="${i}">${mn}</option>`); },
-            getLastCheck: function(id) { return this.data.checks.filter(c => String(c.aparId) === String(id)).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp))[0]; },
-            updateLiveStatus: function() { const c = document.querySelectorAll('input[name="checkItem"]'); const all = Array.from(c).every(x => x.checked); const tj = !c[4].checked; const ib = !c[7].checked; let m = '', cl = '', pb = document.getElementById('evidenceContainer'); if (all) { m = '<div class="text-green-600 font-bold"><i class="fa-solid fa-check-circle text-2xl"></i><br>KONDISI BAIK</div>'; cl = 'border-green-300 bg-green-50'; pb.classList.add('hidden'); } else { pb.classList.remove('hidden'); if (tj || ib) { m = '<div class="text-purple-600 font-bold"><i class="fa-solid fa-fill-drip text-2xl"></i><br>APAR HARUS DIISI ULANG</div>'; cl = 'border-purple-300 bg-purple-50'; } else { m = '<div class="text-red-600 font-bold"><i class="fa-solid fa-triangle-exclamation text-2xl"></i><br>KONDISI RUSAK</div>'; cl = 'border-red-300 bg-red-50'; } } const b = document.getElementById('liveStatusBox'); b.innerHTML = m; b.className = `mb-6 p-4 rounded-lg border-2 text-center transition ${cl}`; },
-            
             showDetail: function(id) {
-                this.data.currentDetailId = id; const apar = this.data.apars.find(a => String(a.id) === String(id)); 
-                if (!apar) { alert('Sedang memuat data terbaru... Silakan tunggu sebentar dan coba lagi.'); this.fetchDataWithTimeout(); return; }
-                this.navigate('detail'); document.getElementById('detailKode').innerText = apar.kode; document.getElementById('detailLokasi').innerText = apar.lokasi; document.getElementById('detailJenis').innerText = apar.jenis; document.getElementById('detailBerat').innerText = apar.berat + ' kg'; document.getElementById('detailRefill').innerText = apar.refillDate ? new Date(apar.refillDate).toLocaleDateString('id-ID') : '-'; document.getElementById('detailExpired').innerText = new Date(apar.expiredDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); document.getElementById('btnChecklistNow').onclick = () => this.showChecklistForm(id);
-                const lC = this.getLastCheck(id); const sB = document.getElementById('scanStatusBanner'); const tL = document.getElementById('tindakLanjutContainer'); const iE = new Date(apar.expiredDate) < new Date();
-                this.renderMiniHistory(id, 'detailHistoryBody'); this.renderMovementHistory(id); sB.classList.remove('hidden');
-                if (lC) { 
-                    const isG = String(lC.isGood).toLowerCase() === 'true'; if (isG) { sB.className = "mb-6 p-4 rounded-lg text-center bg-green-100 border border-green-300"; document.getElementById('scanStatusText').className = "text-2xl font-black text-green-700"; document.getElementById('scanStatusText').innerHTML = 'KONDISI BAIK <i class="fa-solid fa-circle-check"></i>'; tL.classList.add('hidden'); } else { if (lC.notes && lC.notes.includes('HARUS DIISI ULANG')) { sB.className = "mb-6 p-4 rounded-lg text-center bg-purple-100 border border-purple-300 animate-pulse"; document.getElementById('scanStatusText').className = "text-2xl font-black text-purple-700"; document.getElementById('scanStatusText').innerHTML = 'APAR HARUS DIISI ULANG <i class="fa-solid fa-fill-drip"></i>'; } else { sB.className = "mb-6 p-4 rounded-lg text-center bg-red-100 border border-red-300 animate-pulse"; document.getElementById('scanStatusText').className = "text-2xl font-black text-red-700"; document.getElementById('scanStatusText').innerHTML = 'KONDISI RUSAK <i class="fa-solid fa-circle-xmark"></i>'; } tL.classList.remove('hidden'); } document.getElementById('scanStatusDate').innerText = "Cek Terakhir: " + new Date(lC.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}); 
-                } else { sB.className = "mb-6 p-4 rounded-lg text-center bg-gray-100 border border-gray-300"; document.getElementById('scanStatusText').innerHTML = "BELUM ADA DATA"; tL.classList.add('hidden'); }
+                this.data.currentDetailId = id; 
+                const apar = this.data.apars.find(a => String(a.id) === String(id)); 
+                if (!apar) return;
+                this.navigate('detail'); 
+                document.getElementById('detailKode').innerText = apar.kode;
+                document.getElementById('detailLokasi').innerText = apar.lokasi;
+                document.getElementById('detailJenis').innerText = apar.jenis;
+                document.getElementById('detailBerat').innerText = apar.berat + ' kg';
+                
+                const lC = this.getLastCheck(id);
+                const sB = document.getElementById('scanStatusBanner');
+                const tL = document.getElementById('tindakLanjutContainer');
+                const isExp = new Date(apar.expiredDate) < new Date();
+                
+                sB.classList.remove('hidden');
+                if (lC) {
+                    const isG = String(lC.isGood).toLowerCase() === 'true';
+                    if (isG && !isExp) {
+                        sB.className = "mb-6 p-4 rounded-lg text-center bg-green-100 border border-green-300";
+                        document.getElementById('scanStatusText').innerHTML = 'KONDISI BAIK <i class="fa-solid fa-circle-check"></i>';
+                        tL.classList.add('hidden'); // Sembunyikan jika baik
+                    } else {
+                        sB.className = "mb-6 p-4 rounded-lg text-center bg-red-100 border border-red-300 animate-pulse";
+                        document.getElementById('scanStatusText').innerHTML = 'PERLU TINDAK LANJUT <i class="fa-solid fa-circle-xmark"></i>';
+                        tL.classList.remove('hidden'); // Munculkan jika rusak/expired
+                    }
+                }
+                this.renderMiniHistory(id, 'detailHistoryBody');
             },
 
-            renderMiniHistory: function(id, tId) { 
-                const c = document.getElementById(tId); c.innerHTML = ''; 
-                const h = this.data.checks.filter(x => String(x.aparId) === String(id)).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5); 
-                h.forEach(x => { 
-                    const isG = String(x.isGood).toLowerCase() === 'true'; 
-                    let stTxt = isG ? 'BAIK' : 'RUSAK';
-                    let stCol = isG ? 'text-green-700 border-green-600 bg-green-50' : 'text-red-700 border-red-600 bg-red-50';
-                    let icon = isG ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600';
-
-                    if (!isG && x.notes && x.notes.includes('HARUS DIISI ULANG')) {
-                        stTxt = 'ISI ULANG';
-                        stCol = 'text-purple-700 border-purple-600 bg-purple-50';
-                        icon = 'fa-fill-drip text-purple-600';
-                    }
-
-                    c.innerHTML += `<div class="p-3 rounded-lg border ${isG ? 'bg-green-50 border-green-200' : (stTxt === 'ISI ULANG' ? 'bg-purple-50 border-purple-200' : 'bg-red-50 border-red-200')} flex items-start gap-3 relative group">
-                        <i class="fa-solid ${icon} mt-1"></i>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center">
-                                <span class="font-bold text-xs uppercase">${new Date(x.timestamp).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'2-digit'})}</span>
-                                <span class="text-[10px] font-bold border border-current px-1 rounded ${stCol.split(' ')[0]}">${stTxt}</span>
-                            </div>
-                            <div class="text-xs italic text-gray-600 mt-1">"${x.notes}"</div>
-                            <div class="text-[10px] text-gray-500 font-bold mt-1"><i class="fa-solid fa-user-tag mr-1"></i> ${x.petugas || '-'}</div>
-                        </div>
-                        <button onclick="app.editHistory('${id}', '${x.timestamp}')" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-white border shadow-sm p-1 rounded text-blue-500 hover:text-blue-700 transition admin-only"><i class="fa-solid fa-pen text-xs"></i></button>
-                    </div>`; 
-                }); 
+            showChecklistForm: function(id) { 
+                this.navigate('checklist'); 
+                document.getElementById('checkAparId').value = id; 
+                document.getElementById('inputPetugas').value = localStorage.getItem('petugasName') || "Guest";
+                document.getElementById('inputCheckDate').value = new Date().toISOString().split('T')[0];
+                this.updateLiveStatus();
+                // FIX: Gunakan ID yang benar untuk riwayat di halaman ceklis jika ada, 
+                // atau hapus baris ini jika tidak ada kontainer riwayat di view-checklist
             },
 
-            showChecklistForm: function(id) { this.navigate('checklist'); document.getElementById('checkAparId').value = id; document.querySelectorAll('input[name="checkItem"]').forEach(c=>c.checked=true); document.getElementById('inputCheckDate').value = new Date().toISOString().split('T')[0]; document.getElementById('inputNotes').value=''; document.getElementById('inputPetugas').value= localStorage.getItem('petugasName') || ''; document.getElementById('evidencePhoto').value = ""; this.updateLiveStatus(); this.renderMiniHistory(id,'miniHistoryBody'); },
-            backToDetail: function() { this.showDetail(document.getElementById('checkAparId').value); },
-            openLocation: function(loc) { window.open(`https://www.google.com/maps/search/${encodeURIComponent(loc + " RSJMM Bogor")}`, '_blank'); },
-            printAllLabels: function() { if(this.data.apars.length===0) return; const c = document.getElementById('printAllArea'); c.innerHTML=''; this.data.apars.forEach(a=>{ const d=document.createElement('div'); d.className='qr-card'; d.innerHTML=`<b>${a.kode}</b><div id="qr-${a.id}" style="display:flex;justify-content:center;margin:5px 0;"></div><small>${a.lokasi}</small>`; c.appendChild(d); new QRCode(d.querySelector(`#qr-${a.id}`), {text:`${window.location.href.split('?')[0]}?id=${a.id}`, width:80, height:80}); }); document.body.classList.add('printing-all'); setTimeout(()=>{window.print(); document.body.classList.remove('printing-all');},1000); },
-            printLabel: function(id) { const a=this.data.apars.find(x=>String(x.id)==String(id)); if(!a)return; document.getElementById('printLabelKode').innerText=a.kode; document.getElementById('printLabelLokasi').innerText=a.lokasi; document.getElementById('printQrContainer').innerHTML=''; new QRCode(document.getElementById('printQrContainer'), {text:`${window.location.href.split('?')[0]}?id=${a.id}`, width:120, height:120}); document.body.classList.add('printing-label'); setTimeout(()=>{window.print(); document.body.classList.remove('printing-label');},500); },
-            shareStatus: async function() { const el=document.getElementById('captureArea'); el.classList.add('capturing'); try { const cvs = await html2canvas(el, {scale:2}); const win = window.open(''); win.document.write(`<img src="${cvs.toDataURL()}">`); setTimeout(()=>win.print(),500); el.classList.remove('capturing'); } catch(e){alert('Gagal Print'); el.classList.remove('capturing');}},
-            compressImage: function(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = (event) => { const img = new Image(); img.src = event.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const maxWidth = 600; const scaleSize = maxWidth / img.width; canvas.width = maxWidth; canvas.height = img.height * scaleSize; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); resolve(canvas.toDataURL('image/jpeg', 0.5)); } } }); },
-            
-            submitChecklist: async function(e) { 
-                e.preventDefault(); 
-                const id = document.getElementById('checkAparId').value; 
-                if (!id) return alert("Error: ID APAR tidak terbaca."); 
-                
-                let allChecked = true; 
-                let checklistText = "";
-                let uncheckedItems = [];
-                const itemLabels = ["Nozzle", "Pin", "Segel", "Selang", "Tekanan", "Body", "Hanger", "Isi"];
-                
-                const checks = document.querySelectorAll('input[name="checkItem"]'); 
-                checks.forEach((cb, index) => { 
-                    if (!cb.checked) {
-                        allChecked = false; 
-                        uncheckedItems.push(itemLabels[index]);
-                    }
-                }); 
-                
-                if(allChecked) {
-                    checklistText = "Semua Item (1-8) OK. Lengkap & Berfungsi.";
+            getLastCheck: function(id) { 
+                return this.data.checks.filter(c => String(c.aparId) === String(id)).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp))[0]; 
+            },
+
+            updateLiveStatus: function() {
+                const c = document.querySelectorAll('input[name="checkItem"]');
+                const all = Array.from(c).every(x => x.checked);
+                const b = document.getElementById('liveStatusBox');
+                const pb = document.getElementById('evidenceContainer');
+                if (all) {
+                    b.innerHTML = '<div class="text-green-600 font-bold">KONDISI BAIK</div>';
+                    b.className = "mb-6 p-4 rounded-lg border-2 border-green-300 bg-green-50";
+                    pb.classList.add('hidden');
                 } else {
-                    checklistText = "Item Bermasalah (Tidak Diceklis): " + uncheckedItems.join(", ");
-                }
-
-                const tj = !checks[4].checked; // Tekanan
-                const ib = !checks[7].checked; // Isi
-                let anp = ""; 
-                
-                if (tj || ib) { 
-                    anp = "[HARUS DIISI ULANG] "; 
-                } else if (!allChecked) {
-                    anp = "[RUSAK] ";
-                }
-
-                let img = ""; 
-                if (!allChecked) { 
-                    const fi = document.getElementById('evidencePhoto'); 
-                    if (fi.files.length === 0) { alert("WAJIB Upload Foto Bukti!"); return; } 
-                    this.toggleLoading(true, "Mengompres Foto..."); 
-                    img = await this.compressImage(fi.files[0]); 
-                    this.toggleLoading(false); 
-                    anp += "[FOTO TERLAMPIR] "; 
-                } 
-                
-                const un = document.getElementById('inputNotes').value.trim(); 
-                let fn = anp + checklistText + (un ? " | Catatan: " + un : ""); 
-                
-                const cd = { action: "addCheck", aparId: id, year: new Date(document.getElementById('inputCheckDate').value).getFullYear(), month: new Date(document.getElementById('inputCheckDate').value).getMonth(), timestamp: new Date(document.getElementById('inputCheckDate').value).toISOString(), isGood: allChecked, notes: fn, petugas: document.getElementById('inputPetugas').value.trim(), imageData: img }; 
-                const s = await this.sendData(cd); 
-                if(s) { 
-                    this.showDetail(id); 
-                    if(allChecked) { this.showToast("Terima kasih!", "green"); } else { this.showToast("Tersimpan!", "red"); } 
-                } 
-            },
-            
-            // --- LOGIKA HAPUS DENGAN POPUP ---
-            deleteApar: function(id) {
-                this.data.deleteTargetId = id;
-                document.getElementById('deleteModal').classList.remove('hidden');
-            },
-
-            confirmDelete: async function() {
-                const id = this.data.deleteTargetId;
-                if (!id) return;
-                document.getElementById('deleteModal').classList.add('hidden');
-                await this.sendData({ action: "deleteApar", id: id });
-                this.renderDashboard();
-                this.data.deleteTargetId = null;
-            },
-            // ---------------------------------
-
-            // ==========================================
-            // FITUR BARU: MODUL K3 (SAFETY FIRST)
-            // ==========================================
-            
-            openK3Form: function(type) {
-                this.navigate('k3-form');
-                document.getElementById('k3Jenis').value = type === 'KK' ? 'Kecelakaan Kerja' : (type === 'B3' ? 'Tumpahan B3' : 'Tertusuk Jarum');
-                document.getElementById('k3FormTitle').innerText = type === 'KK' ? 'Lapor Kecelakaan Kerja' : 'Lapor Insiden ' + type;
-                
-                document.querySelector('#view-k3-form form').reset();
-                const now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                document.getElementById('k3Waktu').value = now.toISOString().slice(0,16);
-                document.getElementById('k3Pelapor').value = localStorage.getItem('petugasName') || '';
-
-                setTimeout(() => this.initSigPad(), 500);
-            },
-
-            initSigPad: function() {
-                const canvas = document.getElementById('k3SigPad');
-                canvas.width = canvas.offsetWidth;
-                const ctx = canvas.getContext('2d');
-                ctx.strokeStyle = "#000"; ctx.lineWidth = 2;
-                let isDrawing = false;
-                
-                const start = (e) => { isDrawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX || e.touches[0].clientX - canvas.getBoundingClientRect().left, e.offsetY || e.touches[0].clientY - canvas.getBoundingClientRect().top); };
-                const end = () => { isDrawing = false; };
-                const move = (e) => { if(!isDrawing) return; e.preventDefault(); ctx.lineTo(e.offsetX || e.touches[0].clientX - canvas.getBoundingClientRect().left, e.offsetY || e.touches[0].clientY - canvas.getBoundingClientRect().top); ctx.stroke(); };
-                
-                canvas.onmousedown = start; canvas.onmouseup = end; canvas.onmousemove = move;
-                canvas.ontouchstart = start; canvas.ontouchend = end; canvas.ontouchmove = move;
-                this.data.sigPad = canvas;
-            },
-
-            clearSig: function() {
-                const c = this.data.sigPad;
-                c.getContext('2d').clearRect(0,0,c.width,c.height);
-            },
-
-            submitK3: async function(e) {
-                e.preventDefault();
-                this.toggleLoading(true, "Mengirim Laporan K3...");
-                
-                // MENGUMPULKAN DATA DARI FORM BARU
-                const jenis = document.getElementById('k3Jenis').value;
-                const desc = document.getElementById('k3Kronologi').value; // Menggunakan kronologi sebagai deskripsi utama
-
-                // Checkbox Jenis Kecelakaan
-                let jenisDetail = [];
-                document.querySelectorAll('input[name="k3JenisDetail"]:checked').forEach(c => jenisDetail.push(c.value));
-                
-                // Radio Akibat
-                let akibat = document.querySelector('input[name="k3Akibat"]:checked')?.value || "";
-
-                // Radio Grading
-                let grading = document.querySelector('input[name="k3Grading"]:checked')?.value || "";
-
-                let fotoBase64 = "";
-                const fileInput = document.getElementById('k3Foto');
-                if(fileInput.files.length > 0) {
-                    fotoBase64 = await this.compressImage(fileInput.files[0]);
-                }
-
-                const fd = new FormData();
-                fd.append('action', 'input');
-                fd.append('jenis', jenis);
-                fd.append('ruangan', document.getElementById('k3Lokasi').value); // Menggunakan lokasi sebagai ruangan kejadian
-                fd.append('pelapor', document.getElementById('k3Pelapor').value);
-                
-                // WAKTU: Gabungkan Tgl & Jam
-                let tgl = document.getElementById('k3TglKejadian').value;
-                let jam = document.getElementById('k3JamKejadian').value;
-                fd.append('waktu_kejadian', tgl + 'T' + jam); 
-
-                fd.append('deskripsi', desc);
-                fd.append('ttd', this.data.sigPad.toDataURL());
-                fd.append('doc_b3', fotoBase64); 
-
-                // Field Tambahan Sesuai Formulir RS
-                fd.append('nama_pegawai', document.getElementById('k3KorbanNama').value);
-                fd.append('jabatan', document.getElementById('k3KorbanJabatan').value); // Unit Kerja
-                fd.append('nip', document.getElementById('k3KorbanNIP').value);
-                fd.append('ttl', document.getElementById('k3TTL').value);
-                fd.append('gender', document.getElementById('k3Gender').value);
-                fd.append('status_pegawai', document.getElementById('k3Jabatan').value); // Jabatan Dropdown
-
-                fd.append('jenis_detail', jenisDetail.join(', '));
-                fd.append('saksi', document.getElementById('k3Saksi').value);
-                fd.append('tempat_detail', document.getElementById('k3TempatSpesifik').value);
-                fd.append('ruangan_korban', document.getElementById('k3UnitPenyebab').value); // Unit Penyebab
-                fd.append('akibat', akibat);
-                fd.append('tindakan', document.getElementById('k3Tindakan').value);
-                fd.append('tindakan_oleh', document.getElementById('k3TindakanOleh').value);
-                fd.append('grading', grading);
-                fd.append('wa', document.getElementById('k3WA').value);
-
-                try {
-                    const r = await fetch(API_K3, { method: 'POST', body: fd });
-                    const d = await r.json();
-                    if(d.result === 'success') {
-                        // TAMPILKAN POPUP SUKSES MODERN
-                        document.getElementById('successTicketId').innerText = d.ticket;
-                        document.getElementById('successModal').classList.remove('hidden');
-                        
-                        this.navigate('k3-menu');
-                    } else {
-                        alert("Gagal: " + d.error);
-                    }
-                } catch(err) {
-                    alert("Error Koneksi K3");
-                } finally {
-                    this.toggleLoading(false);
+                    b.innerHTML = '<div class="text-red-600 font-bold">KONDISI RUSAK</div>';
+                    b.className = "mb-6 p-4 rounded-lg border-2 border-red-300 bg-red-50";
+                    pb.classList.remove('hidden');
                 }
             },
 
-            // FITUR LACAK STATUS
-            trackK3Ticket: async function() {
-                const id = document.getElementById('k3TrackInput').value.trim();
-                if(!id) return alert("Masukkan ID Tiket!");
-                
-                this.toggleLoading(true, "Melacak...");
-                try {
-                    const r = await fetch(API_K3 + "?action=read&t=" + Date.now());
-                    const d = await r.json();
-                    const item = d.find(x => String(x.ID_Tiket).trim() === id);
-                    
-                    if(item) {
-                        document.getElementById('k3TrackResult').classList.remove('hidden');
-                        document.getElementById('trJenis').innerText = item.Jenis_Insiden;
-                        document.getElementById('trStatus').innerText = item.Status;
-                        
-                        // Warna Badge
-                        const badge = document.getElementById('trStatus');
-                        if(item.Status === 'Selesai') badge.className = "text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800";
-                        else if(item.Status === 'Diproses') badge.className = "text-xs font-bold px-2 py-1 rounded bg-yellow-100 text-yellow-800";
-                        else badge.className = "text-xs font-bold px-2 py-1 rounded bg-red-100 text-red-800";
-
-                        document.getElementById('trLokasi').innerText = item.Ruangan;
-                        document.getElementById('trWaktu').innerText = new Date(item.Waktu).toLocaleString('id-ID');
-                        document.getElementById('trTL').innerText = item.Tindak_Lanjut || "Belum ada tindak lanjut.";
-                    } else {
-                        alert("Tiket tidak ditemukan!");
-                        document.getElementById('k3TrackResult').classList.add('hidden');
-                    }
-                } catch(e) { alert("Gagal melacak."); }
-                finally { this.toggleLoading(false); }
-            },
-
-            closeSuccessModal: function() {
-                document.getElementById('successModal').classList.add('hidden');
-            },
-
-            copyTicket: function() {
-                const t = document.getElementById('successTicketId').innerText;
-                navigator.clipboard.writeText(t).then(() => alert("Tiket Disalin!"));
-            },
-
-            fetchK3Data: async function(showLoading = true) {
-                if(showLoading) this.toggleLoading(true, "Memuat Data K3...");
-                try {
-                    const r = await fetch(API_K3 + "?action=read&t=" + Date.now());
-                    const d = await r.json();
-                    this.data.k3Data = d;
-                    this.renderK3Admin();
-                } catch(e) { console.error(e); } 
-                finally { if(showLoading) this.toggleLoading(false); }
-            },
-
-            renderK3Admin: function() {
-                const d = this.data.k3Data;
-                const c = document.getElementById('k3ListContainer');
+            renderMiniHistory: function(id, containerId) {
+                const c = document.getElementById(containerId);
+                if(!c) return;
                 c.innerHTML = '';
-                
-                let tot=0, w=0, p=0, fin=0;
-                d.forEach(x => { tot++; if(x.Status=='Menunggu') w++; else if(x.Status=='Diproses') p++; else fin++; });
-                document.getElementById('k3StatTotal').innerText = tot;
-                document.getElementById('k3StatWait').innerText = w;
-                document.getElementById('k3StatProc').innerText = p;
-                document.getElementById('k3StatDone').innerText = fin;
-
-                [...d].reverse().forEach(x => {
-                    const color = x.Status=='Selesai'?'border-green-500':(x.Status=='Diproses'?'border-yellow-500':'border-red-500');
-                    const dataStr = encodeURIComponent(JSON.stringify(x));
-                    
-                    c.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl border-l-4 ${color} shadow-sm">
-                        <div class="flex justify-between mb-2">
-                            <span class="font-bold text-xs bg-gray-800 text-white px-2 py-1 rounded">#${x.ID_Tiket}</span>
-                            <span class="text-xs font-bold uppercase">${x.Status}</span>
-                        </div>
-                        <h4 class="font-bold text-gray-800">${x.Jenis_Insiden}</h4>
-                        <div class="text-xs text-gray-500 mb-2"><i class="fa-solid fa-location-dot mr-1"></i> ${x.Ruangan} | ${x.Pelapor}</div>
-                        <div class="bg-gray-50 p-2 rounded text-xs italic text-gray-600 mb-3">"${x.Deskripsi}"</div>
-                        
-                        <div class="flex gap-2 justify-end">
-                            <button onclick="app.printK3PDF('${dataStr}')" class="bg-red-50 text-red-600 text-xs px-3 py-1.5 rounded font-bold hover:bg-red-100"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-                        </div>
+                const h = this.data.checks.filter(x => String(x.aparId) === String(id)).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+                h.forEach(x => {
+                    const isG = String(x.isGood).toLowerCase() === 'true';
+                    c.innerHTML += `<div class="p-3 rounded-lg border ${isG ? 'bg-green-50' : 'bg-red-50'} text-xs">
+                        <b>${new Date(x.timestamp).toLocaleDateString()}</b> - ${isG ? 'BAIK' : 'RUSAK'}<br>${x.notes}
                     </div>`;
                 });
             },
 
-            printK3QR: function() {
-                const url = window.location.href.split('?')[0] + "?k3=lapor";
-                document.getElementById('k3QrCodeTarget').innerHTML = '';
-                new QRCode(document.getElementById('k3QrCodeTarget'), {
-                    text: url,
-                    width: 250,
-                    height: 250
-                });
-                
-                document.body.classList.add('printing-k3');
-                setTimeout(() => {
-                    window.print();
-                    document.body.classList.remove('printing-k3');
-                }, 500);
-            },
-
-            printK3PDF: function(dataStr) {
-                const d = JSON.parse(decodeURIComponent(dataStr));
-                const area = document.getElementById('pdf-content-area');
-                this.toggleLoading(true, "Membuat PDF...");
-
-                // MAPPING DATA
-                let nama = d.Nama_Pegawai || "-";
-                let ruangan = d.Jabatan || "-"; // Menggunakan Jabatan sebagai Unit Kerja sesuai mapping form
-                let nip = d.NIP || "-";
-                let ttl = d.TTL || "-";
-                let gender = (d.Gender == 'L') ? "Laki-laki" : "Perempuan";
-                let jabatan = d.Status_Pegawai || "-"; // Status Pegawai sebagai Jabatan
-                let waktu = d.Waktu_Kejadian ? new Date(d.Waktu_Kejadian).toLocaleString('id-ID') : "-";
-                let lokasi = d.Ruangan || "-";
-                let kronologi = d.Deskripsi || "-";
-                let jenis = d.Jenis_Kecelakaan_Detail || "-";
-                let saksi = d.Saksi || "-";
-                let tempat = d.Tempat_Detail || "-";
-                let akibat = d.Akibat || "-";
-                let tindakan = d.Tindakan_Awal || d.Tindakan || "-"; // Mapping fallback
-                let oleh = d.Tindakan_Oleh || "-";
-                let grading = d.Grading || "-";
-                let pelapor = d.Pelapor || "-";
-                let wa = d.No_WA || "-";
-
-                // TANGGAL CETAK
-                let tglLapor = d.Waktu ? new Date(d.Waktu) : new Date();
-                let months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-                let bogorDate = "Bogor, " + tglLapor.getDate() + " " + months[tglLapor.getMonth()] + " " + tglLapor.getFullYear();
-
-                area.innerHTML = `
-                    <div style="font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4;">
-                        <h3 style="text-align:center; font-weight:bold; margin-bottom:0;">LAPORAN PAK / KECELAKAAN KERJA PETUGAS</h3>
-                        <h4 style="text-align:center; font-weight:bold; margin-top:5px;">RSJ dr. H. MARZOEKI MAHDI BOGOR</h4>
-                        <hr style="border: 1px solid black; margin-bottom: 20px;">
-                        
-                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:5px;">I. DATA PEGAWAI</div>
-                        <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
-                            <tr><td width="160">Nama</td><td width="10">:</td><td>${nama}</td></tr>
-                            <tr><td>Unit Kerja</td><td>:</td><td>${ruangan}</td></tr>
-                            <tr><td>NIP</td><td>:</td><td>${nip}</td></tr>
-                            <tr><td>Tempat, Tanggal Lahir</td><td>:</td><td>${ttl}</td></tr>
-                            <tr><td>Jenis Kelamin</td><td>:</td><td>${gender}</td></tr>
-                            <tr><td>Jabatan</td><td>:</td><td>${jabatan}</td></tr>
-                        </table>
-
-                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:5px;">II. RINCIAN KEJADIAN</div>
-                        <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
-                            <tr><td width="160">Tanggal dan Waktu</td><td width="10">:</td><td>${waktu}</td></tr>
-                            <tr><td>Lokasi Kejadian</td><td>:</td><td>${lokasi}</td></tr>
-                            <tr><td>Jenis Kecelakaan</td><td>:</td><td>${jenis}</td></tr>
-                            <tr><td>Saksi Mata</td><td>:</td><td>${saksi}</td></tr>
-                            <tr><td>Tempat Spesifik</td><td>:</td><td>${tempat}</td></tr>
-                            <tr><td>Akibat Kecelakaan</td><td>:</td><td>${akibat}</td></tr>
-                            <tr><td>Tindakan Dilakukan</td><td>:</td><td>${tindakan}</td></tr>
-                            <tr><td>Tindakan Oleh</td><td>:</td><td>${oleh}</td></tr>
-                            <tr><td colspan="3" style="padding-top:10px;"><b>Kronologis Kejadian:</b><div style="border:1px solid #ccc; padding:5px; margin-top:5px; min-height:50px;">${kronologi}</div></td></tr>
-                        </table>
-
-                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:5px;">III. GRADING RISIKO</div>
-                        <div style="margin-bottom:20px;">Risiko: <b>${grading}</b></div>
-
-                        <div style="font-weight:bold; text-decoration:underline; margin-bottom:5px;">IV. IDENTITAS PELAPOR</div>
-                        <table style="width:100%; border-collapse:collapse;">
-                            <tr><td width="160">Nama Pelapor</td><td width="10">:</td><td>${pelapor}</td></tr>
-                            <tr><td>No. WhatsApp</td><td>:</td><td>${wa}</td></tr>
-                        </table>
-
-                        <br><br>
-                        <table style="width:100%; text-align:center;">
-                            <tr>
-                                <td width="50%"></td>
-                                <td width="50%">
-                                    ${bogorDate}<br>Pelapor,<br><br>
-                                    ${d.Tanda_Tangan ? `<img src="${d.Tanda_Tangan}" height="60">` : '<br><br>'}
-                                    <br><b>( ${pelapor} )</b>
-                                </td>
-                            </tr>
-                        </table>
-                        
-                        ${d.Dokumentasi_B3 ? `<div style="page-break-before:always; text-align:center;"><h4>Lampiran Dokumentasi</h4><img src="${d.Dokumentasi_B3}" style="max-width:400px; border:1px solid #ccc;"></div>` : ''}
-                    </div>
-                `;
-
-                setTimeout(() => {
-                    html2pdf().set({ margin: 15, filename: `Laporan_K3_${d.ID_Tiket}.pdf` }).from(area).save().then(() => this.toggleLoading(false));
-                }, 1000);
-            },
+            handleDetailBack: function() { this.navigate('dashboard'); },
+            backToDetail: function() { this.showDetail(document.getElementById('checkAparId').value); },
+            toggleLoading: function(s, t) { document.getElementById('loadingOverlay').style.display = s ? 'flex' : 'none'; },
+            handleLogin: function(e) { e.preventDefault(); localStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         };
         document.addEventListener('DOMContentLoaded', () => app.init());
     </script>
